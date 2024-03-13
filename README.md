@@ -1,4 +1,5 @@
-# salamr
+# salamr <img src="https://github.com/MuhammadAbdulSalam/salamr/assets/39949965/b0defc2a-562c-4d1d-aa80-f3e31f575cb0" alt="drawing" width="50"/>
+
 ![salamar](https://img.shields.io/badge/salamr_command_line-1.0.0-blue)
 
 Command line tool that can help you automate android emulator
