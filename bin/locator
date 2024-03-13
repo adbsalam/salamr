@@ -1,7 +1,6 @@
 #!/bin/bash
 
 adb shell uiautomator dump                                                            
-
 adb pull /sdcard/window_dump.xml .
 
 echo "## finding node $1.."

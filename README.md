@@ -27,4 +27,4 @@ salamr -m 'YOUR_VIEW_TEXT_HERE,YOUR_VIEW_TEXT_HERE'
 
 ## In Progress
 
-This is currently a work in progress, In order to use it, feel free to download the files and use file `bash salamr.sh`. Don't forget to rename user directories from the files 
+This is currently a work in progress, In order to use it, feel free to download the files and use file `bash salamr.sh`.

@@ -3,21 +3,22 @@
 while getopts ":l:m:help" opt; do
   case ${opt} in
     h )
-      # -help option
+      # -h option
       echo
       echo -l \(Locate\) - Locate and Tap single item. Usage:  $\salamr -l \"Home\"
       echo
       echo -m \(Multi Locate\) - Locate and Tap multiple item in a sequence. Usage $\salamr -m \"Account,Theme,Dark\" \(avoid extra spaces\)
       echo
-      echo
       ;;
     l )
       # -l option
-      bash /Users/muhammadabdulsalam/Dev/shell/salamr/locator "$OPTARG"
+      script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"  
+      bash "$script_dir/bin/locator"  "$OPTARG"
       ;;
     m )
       # -m option
-      bash /Users/muhammadabdulsalam/Dev/shell/salamr/locate_multiple.sh "$OPTARG"
+      script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"      
+      bash "$script_dir/bin/locate_multiple" "$OPTARG"
       ;;
     \? )
       echo "Invalid option: $OPTARG" >&2
