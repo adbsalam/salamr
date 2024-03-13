@@ -1,0 +1,13 @@
+# Find the screen dimensions
+screen_dimensions=$(adb shell wm size)
+screen_width=$(echo "$screen_dimensions" | awk '{print $3}' | cut -d 'x' -f 1)
+screen_height=$(echo "$screen_dimensions" | awk '{print $3}' | cut -d 'x' -f 2)
+
+# Set the starting and ending coordinates for the swipe
+start_x=$((screen_width / 2))
+start_y=$((screen_height - 500))  # Adjust as needed
+end_x=$((screen_width / 2))
+end_y=$((screen_height / 4))      # Adjust as needed
+
+# Simulate a swipe gesture to scroll to the end
+adb shell input swipe $start_x $start_y $end_x $end_y
