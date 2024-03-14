@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Need resolution to decode log event coordinates to base them on current resolution
+get_screen_resolution() {
+  local resolution_output
+  resolution_output=$(adb shell wm size)
+  local width_height_regex="([0-9]+)x([0-9]+)"
+  if [[ $resolution_output =~ $width_height_regex ]]; then
+    screen_width=${BASH_REMATCH[1]}
+    screen_height=${BASH_REMATCH[2]}
+  else
+    echo "Failed to retrieve screen resolution."
+    exit 1
+  fi
+}
+
+# Function to start recording events
+start_recording() {
+  echo "# recording started, press any key to stop recording"
+  adb shell getevent -lt >.temp/event_log.txt &
+  adb_pid=$!
+}
+
+# Function to stop recording events
+stop_recording() {
+  kill $adb_pid
+  wait $adb_pid
+  echo "# recording stopped"
+
+  declare -a x_scaled_array
+  declare -a y_scaled_array
+
+  # Extract tap coordinates from event log
+  while read -r line; do
+    if [[ $line == *"ABS_MT_POSITION_X"* ]]; then
+      x_hex=$(echo "$line" | awk '{print $NF}')
+      x_dec=$((16#$x_hex))
+      x_scaled_array+=("$((x_dec * screen_width / 32767))")
+    elif [[ $line == *"ABS_MT_POSITION_Y"* ]]; then
+      y_hex=$(echo "$line" | awk '{print $NF}')
+      y_dec=$((16#$y_hex))
+      y_scaled_array+=("$((y_dec * screen_height / 32767))")
+    fi
+  done <.temp/event_log.txt
+
+  # Save coordinates to file
+  for ((i = 0; i < ${#x_scaled_array[@]}; i++)); do
+    echo "X: ${x_scaled_array[i]}, Y: ${y_scaled_array[i]}" >>.temp/coordinates.txt
+  done
+  echo "# input event recorded"
+}
+
+# Remove the .temp folder if it exists
+if [ -d ".temp" ]; then
+  rm -rf .temp
+fi
+
+mkdir -p .temp
+get_screen_resolution
+start_recording
+read -n 1 -s -r -p "Press any key to stop recording: " input
+stop_recording
