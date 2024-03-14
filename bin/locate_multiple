@@ -1,7 +1,11 @@
 #!/bin/bash
 
+: '
+If there are no elements for this script
+exit the process
+'
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 <comma-separated-string>"
+  echo "No components found in input, please check input and try again"
   exit 1
 fi
 
@@ -10,6 +14,12 @@ IFS=',' read -r -a array <<<"$1"
 # Get current script path
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+: '
+handle elements and run actions
+@option B - send back press actions
+@option S - send swipe action
+@option others - locate and tap on item
+'
 for element in "${array[@]}"; do
   if [ "$element" = "B" ]; then
     adb shell input keyevent KEYCODE_BACK

@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Need resolution to decode log event coordinates to base them on current resolution
+: '
+get screen resolution of current emulator screen
+this is required as adb event logs comes with a default resolution
+current emulator resolutions are required in order to
+scale and use on current emulator screen
+'
 get_screen_resolution() {
   local resolution_output
   resolution_output=$(adb shell wm size)
@@ -14,14 +19,22 @@ get_screen_resolution() {
   fi
 }
 
-# Function to start recording events
+: '
+start recording task and collect logs in .temp/event_log.txt file
+'
 start_recording() {
   echo "# recording started, press any key to stop recording"
   adb shell getevent -lt >.temp/event_log.txt &
   adb_pid=$!
 }
 
-# Function to stop recording events
+: '
+stop recording and process collected input events
+find x and y coordinates and add them to .temp/coordinates.txt file
+@important: Some of these events only have 1 axis value, x or y
+this is caused due to events other than tap, such as swipe.
+Tap events will have both x and y
+'
 stop_recording() {
   kill $adb_pid
   wait $adb_pid
@@ -30,7 +43,6 @@ stop_recording() {
   declare -a x_scaled_array
   declare -a y_scaled_array
 
-  # Extract tap coordinates from event log
   while read -r line; do
     if [[ $line == *"ABS_MT_POSITION_X"* ]]; then
       x_hex=$(echo "$line" | awk '{print $NF}')
@@ -43,20 +55,26 @@ stop_recording() {
     fi
   done <.temp/event_log.txt
 
-  # Save coordinates to file
   for ((i = 0; i < ${#x_scaled_array[@]}; i++)); do
     echo "X: ${x_scaled_array[i]}, Y: ${y_scaled_array[i]}" >>.temp/coordinates.txt
   done
   echo "# input event recorded"
 }
 
-# Remove the .temp folder if it exists
+: '
+to avoid running duplicate recorded events
+delete the .temp folder so a new .temp folder will be created
+to generate new files at start of each process
+'
 if [ -d ".temp" ]; then
   rm -rf .temp
 fi
-
 mkdir -p .temp
 get_screen_resolution
 start_recording
+
+: '
+press any key to stop current recording process and end recording
+'
 read -n 1 -s -r -p "Press any key to stop recording: " input
 stop_recording

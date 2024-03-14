@@ -1,5 +1,8 @@
 #!/bin/bash
 
+: '
+echo information about usage and options to be used
+'
 show_help() {
   echo
   echo -l \(Locate\) - Locate and Tap single item - Usage: ~\$salamr -l \"Home\"
@@ -10,9 +13,16 @@ show_help() {
   echo
   echo -p \(Play\) - Play recorded inputs on emulator - Usage: ~\$salamr -p
   echo
-  echo
 }
 
+: '
+Entry point for salamr.sh script_dir
+Handle tool options that can be used within this project
+@option: -l requires at least 1 argument
+@option: -m requires at least 1 argument
+@option: -r requires no arguments
+@option: -p requires no arguments
+'
 while getopts ":l:m:hrp" opt; do
   case ${opt} in
     h)
@@ -43,7 +53,6 @@ while getopts ":l:m:hrp" opt; do
       echo "Invalid option: $OPTARG" >&2
       ;;
     :)
-      # This case won't occur since r and p don't take arguments
       ;;
   esac
 done
