@@ -1,24 +1,24 @@
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <comma-separated-string>"
-    exit 1
+  echo "Usage: $0 <comma-separated-string>"
+  exit 1
 fi
 
-IFS=',' read -r -a array <<< "$1"
+IFS=',' read -r -a array <<<"$1"
 
 # Get current script path
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"      
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 for element in "${array[@]}"; do
-    if [ "$element" = "B" ]; then
-        adb shell input keyevent KEYCODE_BACK
-    elif [ "$element" = "S" ]; then
-        bash "$script_dir/swipe"
-    else
-        echo "processing element: $element"
-        adb shell uiautomator dump                                                            
-        adb pull /sdcard/window_dump.xml .
-        bash "$script_dir/locator" "$element"
-    fi
+  if [ "$element" = "B" ]; then
+    adb shell input keyevent KEYCODE_BACK
+  elif [ "$element" = "S" ]; then
+    bash "$script_dir/swipe"
+  else
+    echo "processing element: $element"
+    adb shell uiautomator dump
+    adb pull /sdcard/window_dump.xml .
+    bash "$script_dir/locator" "$element"
+  fi
 done

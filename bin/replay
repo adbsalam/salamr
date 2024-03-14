@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# create an array of keys to maintain order of coordinates file
+read_coordinates() {
+  declare -A coordinates_map
+  declare -a keys_array
+
+  while IFS= read -r line || [[ -n $line ]]; do
+    IFS=', ' read -r -a coordinates <<<"$line"
+    x=${coordinates[1]}
+    y=${coordinates[3]}
+
+    if [ -n "$y" ]; then
+      keys_array+=("$x")
+      coordinates_map["$x"]=$y
+    fi
+  done <.temp/coordinates.txt
+  index=1
+  for x in "${keys_array[@]}"; do
+    y=${coordinates_map[$x]}
+    echo "# playing input $index.."
+    adb shell input tap "$x" "$y"
+    sleep 2
+    ((index++))
+  done
+}
+
+if [ -f ".temp/coordinates.txt" ]; then
+  read_coordinates
+else
+  echo "Error: Coordinates file not found. Please try recording again"
+  exit 1
+fi
