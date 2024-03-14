@@ -1,3 +1,5 @@
 .DS_Store
 .idea/
-bin/.temp
+bin/.temp/
+.temp
+window_dump.xml

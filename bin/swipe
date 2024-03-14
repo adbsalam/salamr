@@ -7,6 +7,6 @@ screen_height=$(echo "$screen_dimensions" | awk '{print $3}' | cut -d 'x' -f 2)
 start_x=$((screen_width / 2))
 start_y=$((screen_height - 500))
 end_x=$((screen_width / 2))
-end_y=$((screen_height / 4)) 
+end_y=$((screen_height / 4))
 
 adb shell input swipe $start_x $start_y $end_x $end_y

@@ -1,8 +1,7 @@
-# salamr <img src="https://github.com/MuhammadAbdulSalam/salamr/assets/39949965/b0defc2a-562c-4d1d-aa80-f3e31f575cb0" alt="drawing" width="50"/>
+# salamr
+![salamar](https://img.shields.io/badge/salamr_command_line-Experimental_1.0.0-blue)
 
-![salamar](https://img.shields.io/badge/salamr_command_line-1.0.0-blue)
-
-Command line tool that can help you automate android emulator
+Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can repliacte
 
 ## Prerequisites
 To use salamr you need to have 2 command line tools installed `xmlstarlet` and `adb platform tools`
@@ -17,11 +16,11 @@ To install `xmlstarlet`
 brew install android-platform-tools
 ```
 
-Next you need to have an `enumator running` with `application open` that you need to automate 
+Next you need to have an `enumator running` with `application open` that you need to automate
 
 ## Installation
 
-Clone this project in order to use slamr tool. 
+Clone this project in order to use slamr tool.
 
 Once cloned, you can now use `salamr.sh`. Best practice would be to create an alias for `salamr.sh` script. In order to do so you need to edit your `~./zshrc` in root folder and add following alias
 
@@ -32,7 +31,7 @@ alias salamr="bash /path/to/salamr.sh"
 To verify setup open `terminal` and run command `salamr -h`
 
 ## Usage
-gi
+
 ```shell
 # list available features 'help'
 salamr -h 
@@ -42,12 +41,18 @@ salamr -l 'YOUR_VIEW_TEXT_HERE'
 
 # locate multiple items 'multi'
 salamr -m 'YOUR_VIEW_TEXT_HERE,YOUR_VIEW_TEXT_HERE'
+
+# record your inputs
+salamr -r
+
+# play recorded inputs
+salamr -p
 ```
 
 ## Important
 
-Currently salamr only supports finding elements by the displayed text. You cannot select an element by any other attributes. In later releases this feature will be added. 
+Currently salamr only supports finding elements by the displayed text. You cannot select an element by any other attributes. In later releases this feature will be added.
 
-watch video about salamr: [Link to usage video](https://www.linkedin.com/posts/muhammad-abdulsalam-1253a7178_salamr-salam-run-a-command-line-tool-activity-7173786881824817152-cMYG?utm_source=share&utm_medium=member_desktop) 
+watch video about salamr: [Link to usage video](https://www.linkedin.com/posts/muhammad-abdulsalam-1253a7178_salamr-salam-run-a-command-line-tool-activity-7173786881824817152-cMYG?utm_source=share&utm_medium=member_desktop)
 
 adb_salam's LinkedIn: [LinkedIn Profile Link](https://www.linkedin.com/in/muhammad-abdulsalam-1253a7178/)
