@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# create an array of keys to maintain order of coordinates file
+: '
+read coordinates file to start processing each event
+@option keys_array is created from coordinates file values
+this is to make sure we always run inputs in sequence as they exist in the file
+if an input have both x and y axis, perform a tap
+otherwise ignore the element
+'
 read_coordinates() {
   declare -A coordinates_map
   declare -a keys_array
@@ -25,6 +31,10 @@ read_coordinates() {
   done
 }
 
+: '
+Exit the process if coordinates.txt doesnt exist
+no coordinates.txt means input are not recorded
+'
 if [ -f ".temp/coordinates.txt" ]; then
   read_coordinates
 else
