@@ -2,7 +2,6 @@ package locator
 
 import core.ADBProcess
 import core.DirManager
-import core.Logger
 import core.Logger.log
 import core.data.Coordinates
 import org.w3c.dom.Element

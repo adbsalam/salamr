@@ -2,7 +2,6 @@ package multiLocator
 
 import core.ADBProcess
 import core.Delay
-import core.Logger
 import core.Logger.log
 import core.actions.Swipe
 import locator.Locator
