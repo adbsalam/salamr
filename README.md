@@ -4,12 +4,7 @@
 Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can repliacte
 
 ## Prerequisites
-To use salamr you need to have 2 command line tools installed `xmlstarlet` and `adb platform tools`
-
-To install `xmlstarlet`
-```shell
-brew install xmlstarlet
-```
+To use salamr you need to have 1 command line tool installed `adb platform tools`
 
 To install `xmlstarlet`
 ```shell
@@ -39,7 +34,7 @@ salamr -h
 # locate a sigle item 'locate'
 salamr -l 'YOUR_VIEW_TEXT_HERE'
 
-# locate multiple items 'multi'
+# locate multiple items 'multiLocator'
 salamr -m 'YOUR_VIEW_TEXT_HERE,YOUR_VIEW_TEXT_HERE'
 
 # record your inputs
