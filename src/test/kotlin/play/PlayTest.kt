@@ -1,31 +1,42 @@
 package play
 
-import core.ADBProcess
+import actionExecutor.ActionExecutor
+import actionExecutor.SwipeAction
 import core.DirManager
+import core.Duration
+import core.fakes.recordedInputJsonFile
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PlayTest {
 
+    private val actionExecutor: ActionExecutor = mockk()
     private val dirManager: DirManager = mockk()
-    private val adbProcess: ADBProcess = mockk()
-    private val play = Play(dirManager, adbProcess)
+    private val play = Play(dirManager, actionExecutor)
 
-    private val recordedJsonFile =
-        "[{\"swipe\":{\"startX\":599,\"startY\":1951,\"endX\":599,\"endY\":1315,\"duration\":145}},{\"tap\":{\"x\":57,\"y\":23}}]"
+    @BeforeEach
+    fun setup() {
+        every { dirManager.getRecordedJsonFileText() }.returns(recordedInputJsonFile)
+        every { dirManager.getRecordedInputFileText(any()) }.returns(recordedInputJsonFile)
+        every { actionExecutor.swipe(any(), any()) }.answers {}
+        every { actionExecutor.tap(any(), any(), any()) }.answers { }
+    }
 
     @Test
-    fun `when play, and valid input exists`() {
-        every { dirManager.getRecordedJsonFileText() }.returns(recordedJsonFile)
-        every { adbProcess.sendSwipeEvent(any(), any(), any(), any(), any()) }.answers {}
-        every { adbProcess.adbTapProcess(any(), any()) }.answers { }
+    fun `when play, and valid input and no file name`() {
+        play.run(null)
+        verify(exactly = 1) { actionExecutor.swipe(SwipeAction.Custom(599, 1951, 599, 1315, 145), null) }
+        verify(exactly = 1) { actionExecutor.tap(10, 1400, Duration(1.0)) }
+    }
 
-        play.run()
-
-        verify(atMost = 1) { adbProcess.sendSwipeEvent(599, 1951, 599, 1315, 145) }
-        verify(atMost = 1) { adbProcess.adbTapProcess(10, 1400) }
+    @Test
+    fun `when play, and valid input and multiple file name`() {
+        play.run("first,second")
+        verify(exactly = 2) { actionExecutor.swipe(SwipeAction.Custom(599, 1951, 599, 1315, 145), null) }
+        verify(exactly = 2) { actionExecutor.tap(10, 1400, Duration(1.0)) }
     }
 }
 

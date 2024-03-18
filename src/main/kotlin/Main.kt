@@ -1,4 +1,5 @@
 import core.Options
+import delete.Delete
 import help.showHelp
 import locator.Locator
 import multiLocator.MultiLocator
@@ -27,15 +28,17 @@ private fun handleOption(
     locator: Locator = Locator(),
     multiLocator: MultiLocator = MultiLocator(),
     record: Record = Record(),
-    play: Play = Play()
+    play: Play = Play(),
+    delete: Delete = Delete()
 ) {
     // option provided by user
     when (Options.entries.first { it.arg == args[0] }) {
-        Options.Help -> showHelp()
-        Options.Locate -> locator.run(args[1])
-        Options.Multi -> multiLocator.run(args[1])
-        Options.Record -> record.run()
-        Options.Play -> play.run()
+        Options.Help -> showHelp(showElementSummary = true)
+        Options.Locate -> locator.run(args.getOrNull(1))
+        Options.Multi -> multiLocator.run(args.getOrNull(1))
+        Options.Record -> record.run(args)
+        Options.Play -> play.run(args.getOrNull(1))
+        Options.Delete -> delete.run(args.getOrNull(1))
     }
 }
 
@@ -50,7 +53,7 @@ private fun Array<String>.isInvalidOption(): Boolean {
  * size 2 is minimum as 1 option and 1 arg anything more is wrong
  */
 private fun Array<String>.isInputSizeInvalid(): Boolean {
-    return this.size > 2
+    return this.isEmpty()
 }
 
 /**

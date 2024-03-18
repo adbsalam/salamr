@@ -1,5 +1,5 @@
 # salamr
-![salamar](https://img.shields.io/badge/salamr_command_line-Experimental_1.0.0-blue)
+![salamar](https://img.shields.io/badge/salamr_command_line-Experimental_1.0.2-blue)
 
 Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can repliacte
 
@@ -29,19 +29,74 @@ To verify setup open `terminal` and run command `salamr -h`
 
 ```shell
 # list available features 'help'
-salamr -h 
+salamr -h
 
 # locate a sigle item 'locate'
 salamr -l 'YOUR_VIEW_TEXT_HERE'
 
 # locate multiple items 'multiLocator'
-salamr -m 'YOUR_VIEW_TEXT_HERE,YOUR_VIEW_TEXT_HERE'
+salamr -m 'YOUR_VIEW_TEXT_HERE|YOUR_VIEW_TEXT_HERE'
 
 # record your inputs
 salamr -r
 
+# record your inputs to a separate file
+salamr -r -f 'FILE_NAME_HERE'
+
 # play recorded inputs
 salamr -p
+
+# play recorded inputs
+salamr -p 'FILE_NAME_HERE'
+
+# delete a file pass either file name/names or "all" to delete all
+salamr -d 'FILE_NAME_HERE'
+salamr -d all
+```
+
+## Multi Locator element list
+```shell
+Element Summary:
+SU - Swipe Up
+SD - Swipe Down
+SL - Swipe Left
+SR - Swipe Right
+D - Delay 
+B - System Back Press
+TF - Text Field
+Any other element can be used by visible text name such as "Home"
+
+# SWIPE
+# Swipe can be used with custom params "(startX, startY, amountOfSwipe, duration)"
+# Usage: 
+salamr -m "Home|Info|SU|SU|"
+salamr -m "Home|SU(100,100,200,350)"
+
+# Delay
+# Delay need to have a tleast 1 double duration "D0.5, D1.0 etc"
+# Usage:
+salamr -m "Home|D0.5|Info|D1.5"
+
+
+# All visible elmeents
+# call elements to find by "visible text name", additional option index can be added such as "[0]" 
+# Usage:
+salamr -m "Home|Info[2]|Videos[1]"
+
+# TextFields
+# TextFields can be found by index of screen along with text to send TF[0](my text here)
+# these files can then be used to be played as a test suite
+# Usage: 
+salamr -m "Home|TF[0](my text here)|TF[1](my text here)"
+
+# sample command
+salamr -m "TF[0](some text)|Reviews|SU|SU|Relationship[1]|Relationship[1]|Info|SU|SU|see more|SU|see less|AutoTrader|D1|B|D1|B"
+```
+
+## Run test suites
+Once multiple files are recorded, these can now be used to create and run a test suite
+```shell
+salamr -p "fileOne,fileTwo,fileThree"
 ```
 
 ## Important
