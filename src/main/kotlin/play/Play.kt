@@ -1,20 +1,17 @@
 package play
 
 import core.ADBProcess
+import core.Delay
 import core.DirManager
-import core.Logger
 import core.Logger.log
-import core.data.Coordinates
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
-import java.io.File
+import core.data.RecordedEvents
 
 /**
  * Play helps play recorded inputs by user
  */
 class Play(
     private val dirManager: DirManager = DirManager(),
-    private val adbProcess: ADBProcess = ADBProcess()
+    private val adbProcess: ADBProcess = ADBProcess(),
 ) {
 
     /**
@@ -23,12 +20,25 @@ class Play(
      */
     fun run() {
         log("playing recorded inputs")
-        val jsonString = File(dirManager.coordinatesFile).readText()
-        val coordinatesList = Json.decodeFromString(ListSerializer(Coordinates.serializer()), jsonString)
-        coordinatesList.forEachIndexed { index, coordinates ->
+        val jsonString = dirManager.getRecordedJsonFileText()
+        val eventsList = RecordedEvents.recordedEventAdapter.fromJson(jsonString) ?: emptyList()
+
+        eventsList.forEachIndexed { index, event ->
             log("playing recorded input ${index + 1}")
-            adbProcess.startScreenDumpProcess()
-            adbProcess.adbTapProcess(coordinates.x, coordinates.y)
+            if (event.tap != null) {
+                adbProcess.adbTapProcess(event.tap.x, event.tap.y)
+                Delay.ofSeconds(1)
+            } else if (event.swipe != null) {
+                adbProcess.sendSwipeEvent(
+                    startX = event.swipe.startX,
+                    startY = event.swipe.startY,
+                    endX = event.swipe.endX,
+                    endY = event.swipe.endY,
+                    duration = event.swipe.duration
+                )
+                adbProcess.adbTapProcess(10, 1400)
+                Delay.ofSeconds(1)
+            }
         }
     }
 }

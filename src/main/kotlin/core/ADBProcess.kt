@@ -78,8 +78,23 @@ class ADBProcess(
      *
      * This process will perform a swipe on emulator screen
      */
-    fun sendSwipeEvent(startX: Int, startY: Int, endX: Int, endY: Int) {
-        val process = ProcessBuilder("adb", "shell", "input", "swipe", "$startX", "$startY", "$endX", "$endY").start()
+    fun sendSwipeEvent(startX: Int, startY: Int, endX: Int, endY: Int, duration: Int? = null) {
+        val process: Process
+        if (duration == null) {
+            process = ProcessBuilder("adb", "shell", "input", "swipe", "$startX", "$startY", "$endX", "$endY").start()
+        } else {
+            process = ProcessBuilder(
+                "adb",
+                "shell",
+                "input",
+                "swipe",
+                "$startX",
+                "$startY",
+                "$endX",
+                "$endY",
+                "$duration"
+            ).start()
+        }
         process.waitFor()
     }
 
@@ -102,6 +117,11 @@ class ADBProcess(
                 while (reader.readLine().also { line = it } != null) {
                     line?.let {
                         eventList.add(it)
+                        if (it.contains("ffffffff")) {
+                            // tap release/finger up
+                            //this is to stop any fling behaviour caused by action
+                            adbTapProcess(10, 100)
+                        }
                     }
                 }
             }
