@@ -1,5 +1,6 @@
 package record
 
+import core.AdbLog
 import core.DirManager
 import core.Logger
 import core.data.EventLogType
@@ -10,6 +11,7 @@ import core.data.UserInput
 class EventLogManager(private val dirManager: DirManager = DirManager()) {
 
     private lateinit var screenResolutions: ScreenResolutions
+    private var fileName: String? = null
 
     /**
      * Extracts and outputs events based on the provided input logs.
@@ -17,8 +19,9 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
      * @param input The list of input logs.
      * @param scrDimens The screen resolutions.
      */
-    fun extractAndOutputEvents(input: List<String>, scrDimens: ScreenResolutions) {
+    fun extractAndOutputEvents(input: List<String>, scrDimens: ScreenResolutions, file: String?) {
         screenResolutions = scrDimens
+        fileName = file
         val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
         val eventsList = eventLogsByTypes.mapNotNull { getUserInput(it) }
         writeCoordinatesToFile(eventsList)
@@ -111,19 +114,20 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
      * @return A Swipe event object with scaled coordinates and duration, or null if the coordinates are invalid.
      */
     private fun getSwipeEvent(logs: List<String>): UserInput.Swipe? {
-        val logsList = logs.map { convertToAdbLog(it) }
 
+        infix fun Int.scaleTo(screenRes: Int) = (this * screenRes) / 32767
+
+        val logsList = logs.map { convertToAdbLog(it) }
 
         val startX = logsList.firstOrNull { it?.type == EventLogType.ABS_MT_POSITION_X }?.value?.toInt(16) ?: 0
         val startY = logsList.firstOrNull { it?.type == EventLogType.ABS_MT_POSITION_Y }?.value?.toInt(16) ?: 0
         val endX = logsList.lastOrNull { it?.type == EventLogType.ABS_MT_POSITION_X }?.value?.toInt(16) ?: 0
         val endY = logsList.lastOrNull { it?.type == EventLogType.ABS_MT_POSITION_Y }?.value?.toInt(16) ?: 0
 
-        val scaledX = (startX * screenResolutions.width) / 32767
-        val scaledY = (startY * screenResolutions.height) / 32767
-
-        val scaledEndX = (endX * screenResolutions.width) / 32767
-        val scaledEndY = (endY * screenResolutions.height) / 32767
+        val scaledX = startX scaleTo screenResolutions.width
+        val scaledY = startY scaleTo screenResolutions.height
+        val scaledEndX = endX scaleTo screenResolutions.width
+        val scaledEndY = endY scaleTo screenResolutions.height
 
         val firstLog =
             logsList.firstOrNull { it?.type == EventLogType.ABS_MT_POSITION_X || it?.type == EventLogType.ABS_MT_POSITION_Y }
@@ -201,6 +205,6 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
         }
         val eventsList = RecordedEvents.recordedEventAdapter.toJson(listOfRecordedEvents)
         Logger.log("process complete. recorded ${userInputs.size} inputs")
-        dirManager.writeToFile(eventsList.toString())
+        dirManager.writeToFile(eventsList.toString(), fileName)
     }
 }

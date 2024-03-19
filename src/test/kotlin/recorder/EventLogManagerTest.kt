@@ -1,12 +1,14 @@
 package recorder
 
 import core.DirManager
-import core.data.ScreenResolutions
+import core.fakes.mockEventLogs
+import core.fakes.mockScreenResolutions
+import core.fakes.recordedInputJsonFile
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import readTextFileFromResources
 import record.EventLogManager
 
 class EventLogManagerTest {
@@ -14,19 +16,24 @@ class EventLogManagerTest {
     private val dirManager: DirManager = mockk()
     private val eventLogManager = EventLogManager(dirManager)
 
-    private val expectedOutput =
-        "[{\"swipe\":{\"startX\":599,\"startY\":1951,\"endX\":599,\"endY\":1315,\"duration\":145}},{\"tap\":{\"x\":57,\"y\":23}}]"
-
-    @Test
-    fun `when extractAndOutputEvents called, with valid data, correct events should be mapped and output`() {
-        val eventLogs = readTextFileFromResources("adb/eventLog.txt").split("/n")
-        val screenResolutions = ScreenResolutions(1440, 3320)
-
+    @BeforeEach
+    fun setup() {
         every { dirManager.validateTempDir() }.answers { }
         every { dirManager.tempProjectDir }.answers { mockk() }
-        every { dirManager.writeToFile(any()) }.answers { }
-        eventLogManager.extractAndOutputEvents(eventLogs, screenResolutions)
+        every { dirManager.writeToFile(any(), any()) }.answers { }
+    }
 
-        verify { dirManager.writeToFile(expectedOutput) }
+    @Test
+    fun `when extractAndOutputEvents called, with valid data and no file name, correct events should be mapped and output`() {
+        eventLogManager.extractAndOutputEvents(mockEventLogs, mockScreenResolutions, null)
+
+        verify { dirManager.writeToFile(recordedInputJsonFile, null) }
+    }
+
+    @Test
+    fun `when extractAndOutputEvents called, with valid data with file name, correct events should be mapped and output`() {
+        eventLogManager.extractAndOutputEvents(mockEventLogs, mockScreenResolutions, "test")
+
+        verify { dirManager.writeToFile(recordedInputJsonFile, eq("test")) }
     }
 }

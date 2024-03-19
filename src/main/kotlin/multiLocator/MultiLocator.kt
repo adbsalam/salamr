@@ -1,42 +1,138 @@
 package multiLocator
 
-import core.ADBProcess
-import core.Delay
-import core.Logger.log
-import core.actions.Swipe
+import actionExecutor.*
+import core.*
+import core.Delay.ofSeconds
+import core.Interactions.*
 import locator.Locator
 
 /**
  * multi locator helps performs actions on multiple elements as a sequence
  */
 class MultiLocator(
-    private val adbProcess: ADBProcess = ADBProcess(),
     private val locator: Locator = Locator(),
-    private val swipe: Swipe = Swipe()
+    private val actionExecutor: ActionExecutor = ActionExecutorImpl()
 ) {
     /**
-     * args are a string list joint with ","
-     * separate this list into list of strings
-     * perform actions on each item as needed
+     * Parses the given list of strings joined with "," into individual strings and performs actions on each item.
+     * @param args the string list joined with ",".
      */
-    fun run(args: String) {
-        args.split(",").forEach {
-            log("processing element: $it")
-            when (it) {
-                "B" -> {
-                    Delay.ofSeconds(1)
-                    adbProcess.adbBackProcess()
-                    Delay.ofSeconds(1)
-                }
+    fun run(args: String?) {
+        if (args.isNullOrEmpty()) {
+            actionExecutor.systemExit.exitWithHelp("no args passed for -l, -l requires at least 1 arg, see below for usage")
+        }
 
-                "S" -> {
-                    Delay.ofSeconds(1)
-                    swipe.run()
-                    Delay.ofSeconds(0.5)
-                }
-
-                else -> locator.run(it)
+        args.split("|").forEach { input ->
+            Logger.log("processing input.. $input")
+            val element = convertToElement(input)
+            if (element != Other) {
+                ofSeconds(Duration(1.0)) // delay will be handled by locator
+            }
+            when (element) {
+                SystemBack -> actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back)
+                DelayIn -> performDelay(input)
+                SwipeDown -> performSwipe(input, Direction.UpToDown)
+                SwipeUp -> performSwipe(input, Direction.DownToUp)
+                SwipeRight -> performSwipe(input, Direction.RightToLeft)
+                SwipeLeft -> performSwipe(input, Direction.LeftToRight)
+                Other -> locator.run(input)
             }
         }
     }
+
+    /**
+     * Performs a swipe action with the specified direction.
+     * @param input the input string representing the swipe action.
+     * @param direction the direction of the swipe action.
+     */
+    private fun performSwipe(input: String, direction: Direction) {
+        if (input.containsOptions()) {
+            handleSwipeWithParameters(input, direction)
+        } else {
+            actionExecutor.swipe(SwipeAction.Directional(direction))
+        }
+    }
+
+    /**
+     * Handles a swipe action with parameters.
+     * @param input the input string representing the swipe action with parameters.
+     * @param direction the direction of the swipe action.
+     */
+    private fun handleSwipeWithParameters(input: String, direction: Direction) {
+        try {
+            // remove prefix of swipe
+            val swipeOptionsString = input.removeRange(IntRange(0, 1)).replaceBrackets()
+
+            val swipeOptions = swipeOptionsString.split(",")
+            if (swipeOptions.size < 4) {
+                actionExecutor.systemExit.exitWithHelp("invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 500))\"")
+            }
+            val x = swipeOptions.first().toDoubleOrNull()
+            val y = swipeOptions[1].toDoubleOrNull()
+            val amount = swipeOptions[2].toDoubleOrNull()
+            val duration = swipeOptions[3].toDoubleOrNull()
+
+            if (x != null && y != null && amount != null && duration != null) {
+                var endX = x
+                var endY = y
+                when (direction) {
+                    Direction.UpToDown -> endY = y + amount
+                    Direction.DownToUp -> endY = y - amount
+                    Direction.LeftToRight -> endX = x - amount
+                    Direction.RightToLeft -> endX = x + amount
+                }
+
+                actionExecutor.swipe(
+                    actionDelay = Duration(1.0),
+                    input = SwipeAction.Custom(
+                        startX = x.toInt(),
+                        startY = y.toInt(),
+                        endX = endX.toInt(),
+                        endY = endY.toInt(),
+                        duration = duration.toInt()
+                    )
+                )
+            } else {
+                actionExecutor.systemExit.exitWithHelp("invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 0.5))")
+            }
+
+        } catch (e: Exception) {
+            actionExecutor.systemExit.exitWithHelp("S do not have valid coordinates, usage example: S(x,y,amount,duration) such as S()")
+        }
+    }
+
+    /**
+     * Performs a delay action.
+     * @param input the input string representing the delay action.
+     */
+    private fun performDelay(input: String) {
+        val durationString = input.removePrefix(DelayIn.inputName).trim()
+        ofSeconds(Duration(durationString.toDoubleOrNull() ?: 1.0))
+    }
+
+    /**
+     * Converts the input string into an Interactions enum element.
+     * @param inputName the input string to be converted.
+     * @return the corresponding Interactions enum element.
+     */
+    private fun convertToElement(inputName: String): Interactions {
+        return when {
+            inputName isType SwipeDown -> SwipeDown
+            inputName isType SwipeRight -> SwipeRight
+            inputName isType SwipeLeft -> SwipeLeft
+            inputName isType SwipeUp -> SwipeUp
+            inputName isType DelayIn -> DelayIn
+            else -> Interactions.entries.firstOrNull { it.inputName == inputName } ?: Other
+        }
+    }
+
+    /**
+     * Checks if the input string represents the specified interaction.
+     * @param interactions the interaction to check against.
+     * @return true if the input string starts with the interaction's input name, false otherwise.
+     */
+    private infix fun String.isType(interactions: Interactions): Boolean {
+        return this.startsWith(interactions.inputName)
+    }
+
 }

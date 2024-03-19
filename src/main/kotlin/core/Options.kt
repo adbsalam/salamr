@@ -5,5 +5,10 @@ enum class Options(val arg: String) {
     Locate("-l"),
     Multi("-m"),
     Record("-r"),
-    Play("-p")
+    Play("-p"),
+    Delete("-d")
+}
+
+enum class RecordOptions(val arg: String) {
+    File("-f")
 }

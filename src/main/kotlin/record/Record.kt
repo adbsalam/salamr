@@ -1,17 +1,16 @@
 package record
 
-import core.ADBProcess
+import actionExecutor.ActionExecutor
+import actionExecutor.ActionExecutorImpl
 import core.Logger.log
-import core.data.EventLogType
-
-data class AdbLog(val type: EventLogType, val value: String, val time: Double? = null)
+import core.RecordOptions
 
 
 /**
  * record helps record user inputs that cna be played
  */
 class Record(
-    private val adbProcess: ADBProcess = ADBProcess(),
+    private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
     private val eventLogManager: EventLogManager = EventLogManager()
 ) {
     /**
@@ -21,17 +20,34 @@ class Record(
      * once process stops, collect all event logs and start processing them
      * once refinement is done for data, store it as a json into .salamr/recorded.json file
      */
-    fun run() {
+    fun run(args: Array<String>) {
+        val fileName = getFileNameOrError(args)
+
         log("getting screen resolutions")
-        val dimensions = adbProcess.adbGetScreenResolutions()
+        val dimensions = actionExecutor.getScreenResolutions()
 
         log("recording emulator inputs, press any key to stop recording...")
-        val eventList = mutableListOf<String>()
-        val process = adbProcess.adbEventListeningProcess(eventList)
-        readlnOrNull()
-        process.destroy()
+        val eventList = actionExecutor.recordEmulatorEvents()
 
         log("processing current input recording")
-        eventLogManager.extractAndOutputEvents(eventList, dimensions)
+        eventLogManager.extractAndOutputEvents(eventList, dimensions, fileName)
+    }
+
+    private fun getFileNameOrError(args: Array<String>): String? {
+        return try {
+            val option = args.getOrNull(1) ?: return null
+            if (option.trim().isEmpty()) return null
+            if (option.trim().contains(RecordOptions.File.arg)) {
+                val fileName = args.getOrNull(2)
+                if (fileName.isNullOrEmpty()) {
+                    actionExecutor.systemExit.exitWithHelp("no file name given for -r -f, please see usage below")
+                }
+                fileName
+            } else {
+                actionExecutor.systemExit.exitWithHelp("invalid option usage, $option is not a valid -r option, please see usage below")
+            }
+        } catch (e: Exception) {
+            actionExecutor.systemExit.exit()
+        }
     }
 }
