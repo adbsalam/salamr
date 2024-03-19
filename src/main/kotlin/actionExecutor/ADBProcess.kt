@@ -1,5 +1,6 @@
 package actionExecutor
 
+import actionExecutor.ActionExecutor.Companion.swipeInterceptEvent
 import core.Delay
 import core.DirManager
 import core.Duration
@@ -134,7 +135,14 @@ class ADBProcess(
                 if (it.contains("ffffffff")) {
                     // tap release/finger up
                     // This is to stop any fling behavior caused by the action
-                    adbTapProcess(10, 100, null)
+                    sendSwipeEvent(
+                        startX = swipeInterceptEvent.startX,
+                        startY = swipeInterceptEvent.startY,
+                        endX = swipeInterceptEvent.endX,
+                        endY = swipeInterceptEvent.endY,
+                        duration = swipeInterceptEvent.duration,
+                        actionDelay = null
+                    )
                 }
             }
         }
