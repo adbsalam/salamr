@@ -2,11 +2,15 @@ package play
 
 import actionExecutor.ActionExecutor
 import actionExecutor.ActionExecutorImpl
+import actionExecutor.SwipeAction
 import actionExecutor.SwipeAction.Custom
+import core.Delay
+import core.Delay.ofSeconds
 import core.DirManager
 import core.Duration
 import core.Logger.log
 import core.data.RecordedEvents
+import kotlinx.coroutines.delay
 
 /**
  * Play helps play recorded inputs by user
@@ -57,7 +61,7 @@ class Play(
                         duration = event.swipe.duration
                     )
                 )
-                actionExecutor.tap(10, 1400, Duration(1.0))
+                actionExecutor.swipe(ActionExecutor.swipeInterceptEvent, actionDelay = Duration(0.5))
             }
         }
     }

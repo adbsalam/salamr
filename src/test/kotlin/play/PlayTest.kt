@@ -29,14 +29,14 @@ class PlayTest {
     fun `when play, and valid input and no file name`() {
         play.run(null)
         verify(exactly = 1) { actionExecutor.swipe(SwipeAction.Custom(599, 1951, 599, 1315, 145), null) }
-        verify(exactly = 1) { actionExecutor.tap(10, 1400, Duration(1.0)) }
+        verify(exactly = 1) { actionExecutor.swipe(ActionExecutor.swipeInterceptEvent, Duration(0.5)) }
     }
 
     @Test
     fun `when play, and valid input and multiple file name`() {
         play.run("first,second")
         verify(exactly = 2) { actionExecutor.swipe(SwipeAction.Custom(599, 1951, 599, 1315, 145), null) }
-        verify(exactly = 2) { actionExecutor.tap(10, 1400, Duration(1.0)) }
+        verify(exactly = 2) { actionExecutor.swipe(ActionExecutor.swipeInterceptEvent, Duration(0.5)) }
     }
 }
 
