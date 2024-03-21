@@ -51,6 +51,10 @@ fun showHelp(header: String? = null, showElementSummary: Boolean = false) {
              C - C(x,y) Coordinates of an item to tap on 
              Example Usage: ~$salamr -m C(100,240)
              
+             *****Key Event*****
+             K- K(int,int) int value of android KeyEvent
+             Example Usage: ~$salamr -m K(4,111)
+             
              *****Sample*****
              Here's an example usage: 
              ~$salamr -m 'TF[0](some text)|Reviews|SU|SU|Relationship[1]|Relationship[1]|Info|SU|SU|see more|SU|see less|AutoTrader|D1|B|D1|B'

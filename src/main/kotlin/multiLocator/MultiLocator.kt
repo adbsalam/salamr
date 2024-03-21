@@ -29,13 +29,14 @@ class MultiLocator(
                 ofSeconds(Duration(1.0)) // delay will be handled by locator
             }
             when (element) {
-                SystemBack -> actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back)
+                SystemBack -> actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back.input)
                 DelayIn -> performDelay(input)
                 SwipeDown -> performSwipe(input, Direction.UpToDown)
                 SwipeUp -> performSwipe(input, Direction.DownToUp)
                 SwipeRight -> performSwipe(input, Direction.RightToLeft)
                 SwipeLeft -> performSwipe(input, Direction.LeftToRight)
                 Coordinates -> performCustomTap(input)
+                KeyCode -> performKeyCodeEvent(input)
                 Other -> locator.run(input)
             }
         }
@@ -62,7 +63,7 @@ class MultiLocator(
     private fun handleSwipeWithParameters(input: String, direction: Direction) {
         try {
             // remove prefix of swipe
-            val swipeOptionsString = input.removeRange(IntRange(0, 1)).replaceBrackets()
+            val swipeOptionsString = input.removeRange(IntRange(0, 1)).removeBrackets()
 
             val swipeOptions = swipeOptionsString.split(",")
             if (swipeOptions.size < 4) {
@@ -111,8 +112,15 @@ class MultiLocator(
         ofSeconds(Duration(durationString.toDoubleOrNull() ?: 1.0))
     }
 
+    /**
+     * Performs a custom tap action based on the provided input string.
+     * The input string should be in the format of T(x,y), where x and y are coordinates.
+     * Example usage: T(100,100)
+     *
+     * @param input The input string representing the tap action.
+     */
     private fun performCustomTap(input: String) {
-        val cleanElement = input.removePrefix(Coordinates.inputName).replaceBrackets()
+        val cleanElement = input.removePrefix(Coordinates.inputName).removeBrackets()
         val elements = cleanElement.split(",")
         val x = elements.firstOrNull()?.toIntOrNull()
         val y = elements.lastOrNull()?.toIntOrNull()
@@ -122,6 +130,26 @@ class MultiLocator(
         }
 
         actionExecutor.tap(x, y)
+    }
+
+    /**
+     * Performs a key code event based on the provided input string.
+     * The input string should be in the format of K(int,int,...), where each int represents a key code.
+     * Example usage: K(100,200)
+     *
+     * @param input The input string representing the key code event.
+     */
+    private fun performKeyCodeEvent(input: String) {
+        val cleanInput = input.removePrefix(KeyCode.inputName).removeBrackets()
+        val keyEvents = cleanInput.split(",")
+        if (keyEvents.isEmpty()) {
+            actionExecutor.systemExit.exitWithHelp("KeyEvent $input do not have correct values for x and Y, usage: K(int,int...) - K(100,100)")
+        }
+
+        keyEvents.forEach { keyCode ->
+            val intValue = keyCode.toIntOrNull()
+            intValue?.let { actionExecutor.sendKeyEvent(it) }
+        }
     }
 
     /**
@@ -137,6 +165,7 @@ class MultiLocator(
             inputName isType SwipeUp -> SwipeUp
             inputName isType DelayIn -> DelayIn
             inputName isType Coordinates -> Coordinates
+            inputName isType KeyCode -> KeyCode
             else -> Interactions.entries.firstOrNull { it.inputName == inputName } ?: Other
         }
     }

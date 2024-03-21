@@ -56,7 +56,7 @@ class Locator(
             val coordinates = parseBounds(bounds)
             coordinates?.let { actionExecutor.tap(it.x, it.y) }
             actionExecutor.sendText(text, Duration(1.0))
-            actionExecutor.sendKeyEvent(KeyEvent.ForwardKey)
+            actionExecutor.sendKeyEvent(KeyEvent.ForwardKey.input)
         } ?: exitWithError("cannot find element $element")
     }
 

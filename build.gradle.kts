@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "uk.salam.salamr"
-version = "1.3"
+version = "1.4"
 
 repositories {
     mavenCentral()
@@ -22,7 +22,6 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation(kotlin("test"))
 }
-
 
 kotlin {
     jvmToolchain(21)
