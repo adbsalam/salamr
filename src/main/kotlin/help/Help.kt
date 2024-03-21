@@ -9,12 +9,12 @@ fun showHelp(header: String? = null, showElementSummary: Boolean = false) {
     }
     println(
         """
-             -l (Locate) - Locate and Tap single item - Usage: ~$$salamr -l Home"
              -m (Multi Locate)- Locate and Tap multiple item in a sequence - Usage: ~\$$salamr -m Account|Theme|Dark (avoid extra spaces)
              -r (Record)- Record inputs on emulator - Usage: ~\$$salamr -r         
                 -f (file) can be used with -r in order to specify a recording name, Usage: ~\$$salamr -r -f yourFileNameHere
              -p (Play)- Play recorded inputs on emulator - Usage: ~\$$salamr -p
                 optional argument to play specific test file, Usage: ~\$$salamr -p yourFileNameHere
+             -t Track and output inputs from emulator - Usage: ~\$$salamr -t 
              -d (Delete)- Delete recording file/files or use 'all' to delete all - Usage: ~\$$salamr -d 'fileOne,fileTwo'
         """.trimIndent()
     )
@@ -46,6 +46,10 @@ fun showHelp(header: String? = null, showElementSummary: Boolean = false) {
              ******TextFields*****
              TF[INDEX-HERE](TEXT-TO-SEND) use TF to send text to text fields
              £ample Usage: ~$salamr -m Home|TF[0](my text here)|TF[1](my text here)
+             
+             *****Custom Coordinates*****
+             C - C(x,y) Coordinates of an item to tap on 
+             Example Usage: ~$salamr -m C(100,240)
              
              *****Sample*****
              Here's an example usage: 

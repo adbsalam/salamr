@@ -31,9 +31,6 @@ To verify setup open `terminal` and run command `salamr -h`
 # list available features 'help'
 salamr -h
 
-# locate a sigle item 'locate'
-salamr -l 'YOUR_VIEW_TEXT_HERE'
-
 # locate multiple items 'multiLocator'
 salamr -m 'YOUR_VIEW_TEXT_HERE|YOUR_VIEW_TEXT_HERE'
 
@@ -48,6 +45,9 @@ salamr -p
 
 # play recorded inputs
 salamr -p 'FILE_NAME_HERE'
+
+# output inputs from emulator
+salamr -t
 
 # delete a file pass either file name/names or "all" to delete all
 salamr -d 'FILE_NAME_HERE'

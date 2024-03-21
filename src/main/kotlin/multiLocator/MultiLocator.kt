@@ -35,6 +35,7 @@ class MultiLocator(
                 SwipeUp -> performSwipe(input, Direction.DownToUp)
                 SwipeRight -> performSwipe(input, Direction.RightToLeft)
                 SwipeLeft -> performSwipe(input, Direction.LeftToRight)
+                Coordinates -> performCustomTap(input)
                 Other -> locator.run(input)
             }
         }
@@ -110,6 +111,19 @@ class MultiLocator(
         ofSeconds(Duration(durationString.toDoubleOrNull() ?: 1.0))
     }
 
+    private fun performCustomTap(input: String) {
+        val cleanElement = input.removePrefix(Coordinates.inputName).replaceBrackets()
+        val elements = cleanElement.split(",")
+        val x = elements.firstOrNull()?.toIntOrNull()
+        val y = elements.lastOrNull()?.toIntOrNull()
+
+        if (elements.size != 2 || x == null || y == null) {
+            actionExecutor.systemExit.exitWithHelp("Element $input do not have correct values for x and Y, usage: T(x,y) - T(100,100)")
+        }
+
+        actionExecutor.tap(x, y)
+    }
+
     /**
      * Converts the input string into an Interactions enum element.
      * @param inputName the input string to be converted.
@@ -122,6 +136,7 @@ class MultiLocator(
             inputName isType SwipeLeft -> SwipeLeft
             inputName isType SwipeUp -> SwipeUp
             inputName isType DelayIn -> DelayIn
+            inputName isType Coordinates -> Coordinates
             else -> Interactions.entries.firstOrNull { it.inputName == inputName } ?: Other
         }
     }
@@ -132,6 +147,8 @@ class MultiLocator(
      * @return true if the input string starts with the interaction's input name, false otherwise.
      */
     private infix fun String.isType(interactions: Interactions): Boolean {
+        val isOptionText = this.filter { it.isLetter() }
+        if (isOptionText.length > 2) return false
         return this.startsWith(interactions.inputName)
     }
 

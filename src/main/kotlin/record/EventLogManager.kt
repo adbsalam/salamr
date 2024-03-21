@@ -27,6 +27,12 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
         writeCoordinatesToFile(eventsList)
     }
 
+    fun extractEvents(input: List<String>, scrDimens: ScreenResolutions): List<UserInput> {
+        screenResolutions = scrDimens
+        val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
+        return eventLogsByTypes.mapNotNull { getUserInput(it) }
+    }
+
     /**
      * Splits the input logs by chunks delineated by lines containing following 2 patterns.
      * Touch start / finger press ABS_MT_TRACKING_ID   00000000

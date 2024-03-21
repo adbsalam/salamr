@@ -5,6 +5,7 @@ import locator.Locator
 import multiLocator.MultiLocator
 import play.Play
 import record.Record
+import tracker.Tracker
 
 /**
  * Main entry point for salamr
@@ -25,20 +26,20 @@ fun main(args: Array<String>) {
  */
 private fun handleOption(
     args: Array<String>,
-    locator: Locator = Locator(),
     multiLocator: MultiLocator = MultiLocator(),
     record: Record = Record(),
     play: Play = Play(),
-    delete: Delete = Delete()
+    delete: Delete = Delete(),
+    tracker: Tracker = Tracker()
 ) {
     // option provided by user
     when (Options.entries.first { it.arg == args[0] }) {
         Options.Help -> showHelp(showElementSummary = true)
-        Options.Locate -> locator.run(args.getOrNull(1))
         Options.Multi -> multiLocator.run(args.getOrNull(1))
         Options.Record -> record.run(args)
         Options.Play -> play.run(args.getOrNull(1))
         Options.Delete -> delete.run(args.getOrNull(1))
+        Options.Track -> tracker.run()
     }
 }
 

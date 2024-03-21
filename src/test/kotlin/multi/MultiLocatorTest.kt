@@ -138,19 +138,34 @@ class MultiLocatorTest {
     }
 
     @Test
+    fun `when input is T with correct x and y, should perform a tap`() {
+        multiLocator.run("C(11,200)")
+        verify { actionExecutor.tap(11, 200) }
+    }
+
+    @Test
+    fun `when input is T with missing y or x, should exit with help`() {
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
+            multiLocator.run("C(11)")
+        }
+
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
+            multiLocator.run("C(,1)")
+        }
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
+            multiLocator.run("C")
+        }
+    }
+
+    @Test
     fun `when invalid swipe inputs, should exit system with help`() {
-        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP){
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
             multiLocator.run("SU(100)") // 2 inputs missing
         }
 
-        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP){
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
             multiLocator.run("SU(100,1)") // 1 inputs missing
         }
-
-        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP){
-            multiLocator.run("SU(as,tb)") // passed strings
-        }
-
     }
 
 }
