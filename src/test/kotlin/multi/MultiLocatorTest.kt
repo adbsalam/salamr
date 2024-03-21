@@ -118,8 +118,7 @@ class MultiLocatorTest {
 
     @Test
     fun `when any other element is found, run locator correctly`() {
-        multiLocator.run("test")
-        verify(exactly = 1) { locator.run("test") }
+       assert(2 == 3)
     }
 
     @Test
