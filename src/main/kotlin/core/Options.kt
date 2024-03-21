@@ -2,11 +2,11 @@ package core
 
 enum class Options(val arg: String) {
     Help("-h"),
-    Locate("-l"),
     Multi("-m"),
     Record("-r"),
     Play("-p"),
-    Delete("-d")
+    Delete("-d"),
+    Track("-t")
 }
 
 enum class RecordOptions(val arg: String) {

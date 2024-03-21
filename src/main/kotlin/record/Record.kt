@@ -24,13 +24,13 @@ class Record(
         val fileName = getFileNameOrError(args)
 
         log("getting screen resolutions")
-        val dimensions = actionExecutor.getScreenResolutions()
+        val resolutions = actionExecutor.getScreenResolutions()
 
         log("recording emulator inputs, press any key to stop recording...")
         val eventList = actionExecutor.recordEmulatorEvents()
 
         log("processing current input recording")
-        eventLogManager.extractAndOutputEvents(eventList, dimensions, fileName)
+        eventLogManager.extractAndOutputEvents(eventList, resolutions, fileName)
     }
 
     private fun getFileNameOrError(args: Array<String>): String? {
