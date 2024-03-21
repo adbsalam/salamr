@@ -1,4 +1,4 @@
-name: salamr Tests
+name: salamr tests
 
 on:
   push:
