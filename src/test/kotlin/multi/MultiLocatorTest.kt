@@ -33,7 +33,7 @@ class MultiLocatorTest {
     @Test
     fun `when system back is passed, should execute system back correctly`() {
         multiLocator.run("B")
-        verify(exactly = 1) { actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back) }
+        verify(exactly = 1) { actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back.input) }
     }
 
     @Test
@@ -117,6 +117,17 @@ class MultiLocatorTest {
     }
 
     @Test
+    fun `when invalid swipe inputs, should exit system with help`() {
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
+            multiLocator.run("SU(100)") // 2 inputs missing
+        }
+
+        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
+            multiLocator.run("SU(100,1)") // 1 inputs missing
+        }
+    }
+
+    @Test
     fun `when any other element is found, run locator correctly`() {
         multiLocator.run("test")
         verify(exactly = 1) { locator.run("test") }
@@ -124,16 +135,19 @@ class MultiLocatorTest {
 
     @Test
     fun `when multiple elements are sent, should trigger all inputs correctly`() {
-        multiLocator.run("SU|SD|@adb_salam|B|TF[0](text here)|SR|SL")
+        multiLocator.run("SU|SD|@adb_salam|B|TF[0](text here)|SR|SL|C(100,200)|K(11,22)")
 
         verifyOrder {
             actionExecutor.swipe(SwipeAction.Directional(direction = Direction.DownToUp))
             actionExecutor.swipe(SwipeAction.Directional(direction = Direction.UpToDown))
             locator.run("@adb_salam")
-            actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back)
+            actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back.input)
             locator.run("TF[0](text here)")
             actionExecutor.swipe(SwipeAction.Directional(direction = Direction.RightToLeft))
             actionExecutor.swipe(SwipeAction.Directional(direction = Direction.LeftToRight))
+            actionExecutor.tap(100, 200)
+            actionExecutor.sendKeyEvent(11)
+            actionExecutor.sendKeyEvent(22)
         }
     }
 
@@ -158,14 +172,10 @@ class MultiLocatorTest {
     }
 
     @Test
-    fun `when invalid swipe inputs, should exit system with help`() {
-        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
-            multiLocator.run("SU(100)") // 2 inputs missing
-        }
-
-        assertThrowsSystemExit(ExceptionType.EXIT_WITH_HELP) {
-            multiLocator.run("SU(100,1)") // 1 inputs missing
-        }
+    fun `when input is K keycode, should perform key events correctly`() {
+        multiLocator.run("K(11,200)")
+        verify(exactly = 1) { actionExecutor.sendKeyEvent(11) }
+        verify(exactly = 1) { actionExecutor.sendKeyEvent(200) }
     }
 
 }

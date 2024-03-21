@@ -69,7 +69,7 @@ class LocatorTest {
         locator.run("TF[0](test)")
 
         verify(exactly = 1) { actionExecutor.sendText("test", Duration(1.0)) }
-        verify(exactly = 1) { actionExecutor.sendKeyEvent(keyEvent = KeyEvent.ForwardKey) }
+        verify(exactly = 1) { actionExecutor.sendKeyEvent(keyEvent = KeyEvent.ForwardKey.input) }
     }
 
     @Test

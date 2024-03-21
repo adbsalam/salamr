@@ -52,8 +52,8 @@ class ADBProcess(
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
     }
 
-    fun adbSendKeyEventBack(keyEvent: KeyEvent, actionDelay: Duration?) {
-        val process = ProcessBuilder("adb", "shell", "input", "keyevent", "${keyEvent.input}").start()
+    fun adbSendKeyEvent(keyEvent: Int, actionDelay: Duration?) {
+        val process = ProcessBuilder("adb", "shell", "input", "keyevent", "$keyEvent").start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
     }

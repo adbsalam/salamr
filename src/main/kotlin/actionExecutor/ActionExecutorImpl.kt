@@ -46,8 +46,8 @@ class ActionExecutorImpl(
      * @param keyEvent the key event to be sent.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun sendKeyEvent(keyEvent: KeyEvent, actionDelay: Duration?) {
-        adbProcess.adbSendKeyEventBack(keyEvent, actionDelay)
+    override fun sendKeyEvent(keyEvent: Int, actionDelay: Duration?) {
+        adbProcess.adbSendKeyEvent(keyEvent, actionDelay)
     }
 
     /**

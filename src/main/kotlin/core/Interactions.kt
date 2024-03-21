@@ -7,6 +7,7 @@ enum class Interactions(val inputName: String) {
     SwipeRight("SR"),
     SwipeLeft("SL"),
     DelayIn("D"),
+    KeyCode("K"),
     Coordinates("C"),
     Other("")
 }

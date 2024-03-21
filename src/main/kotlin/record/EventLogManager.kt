@@ -17,18 +17,26 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
      * Extracts and outputs events based on the provided input logs.
      *
      * @param input The list of input logs.
-     * @param scrDimens The screen resolutions.
+     * @param screenRes The screen resolutions.
      */
-    fun extractAndOutputEvents(input: List<String>, scrDimens: ScreenResolutions, file: String?) {
-        screenResolutions = scrDimens
+    fun extractAndOutputEvents(input: List<String>, screenRes: ScreenResolutions, file: String?) {
+        screenResolutions = screenRes
         fileName = file
         val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
         val eventsList = eventLogsByTypes.mapNotNull { getUserInput(it) }
         writeCoordinatesToFile(eventsList)
     }
 
-    fun extractEvents(input: List<String>, scrDimens: ScreenResolutions): List<UserInput> {
-        screenResolutions = scrDimens
+    /**
+     * Extracts user input events from a list of input strings based on the provided screen dimensions.
+     * Each input string represents a user input event log.
+     *
+     * @param input The list of input strings representing user input event logs.
+     * @param screenRes Current emulator screen resolutions
+     * @return A list of UserInput objects representing the extracted user input events.
+     */
+    fun extractEvents(input: List<String>, screenRes: ScreenResolutions): List<UserInput> {
+        screenResolutions = screenRes
         val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
         return eventLogsByTypes.mapNotNull { getUserInput(it) }
     }

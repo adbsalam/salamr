@@ -64,6 +64,8 @@ SR - Swipe Right
 D - Delay 
 B - System Back Press
 TF - Text Field
+C - Custom Coordinates
+K - KeyEvent
 Any other element can be used by visible text name such as "Home"
 
 # SWIPE

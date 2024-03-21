@@ -19,7 +19,7 @@ interface ActionExecutor {
 
     fun sendText(text: String, actionDelay: Duration? = null)
 
-    fun sendKeyEvent(keyEvent: KeyEvent, actionDelay: Duration? = null)
+    fun sendKeyEvent(keyEvent: Int, actionDelay: Duration? = null)
 
     fun swipe(input: SwipeAction, actionDelay: Duration? = null)
 
