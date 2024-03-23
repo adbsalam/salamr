@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
@@ -7,7 +5,7 @@ plugins {
 }
 
 group = "uk.salam.salamr"
-version = "1.4"
+version = "1.0.5"
 
 repositories {
     mavenCentral()

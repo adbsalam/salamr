@@ -1,9 +1,9 @@
 import core.Options
 import delete.Delete
 import help.showHelp
-import locator.Locator
 import multiLocator.MultiLocator
 import play.Play
+import pointer.Pointer
 import record.Record
 import tracker.Tracker
 
@@ -30,7 +30,8 @@ private fun handleOption(
     record: Record = Record(),
     play: Play = Play(),
     delete: Delete = Delete(),
-    tracker: Tracker = Tracker()
+    tracker: Tracker = Tracker(),
+    pointer: Pointer = Pointer()
 ) {
     // option provided by user
     when (Options.entries.first { it.arg == args[0] }) {
@@ -39,6 +40,7 @@ private fun handleOption(
         Options.Record -> record.run(args)
         Options.Play -> play.run(args.getOrNull(1))
         Options.Delete -> delete.run(args.getOrNull(1))
+        Options.Pointer -> pointer.run(args.getOrNull(1))
         Options.Track -> tracker.run()
     }
 }

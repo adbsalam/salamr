@@ -16,8 +16,10 @@ fun showHelp(header: String? = null, showElementSummary: Boolean = false) {
                 optional argument to play specific test file, Usage: ~\$$salamr -p yourFileNameHere
              -t Track and output inputs from emulator - Usage: ~\$$salamr -t 
              -d (Delete)- Delete recording file/files or use 'all' to delete all - Usage: ~\$$salamr -d 'fileOne,fileTwo'
+             -s Turn pointer location on or off- Usage: ~\$$salamr -s on OR ~\$$salamr -s off
         """.trimIndent()
     )
+
     if (showElementSummary) {
         println()
         println(

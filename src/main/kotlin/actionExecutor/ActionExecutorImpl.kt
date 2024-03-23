@@ -37,18 +37,20 @@ class ActionExecutorImpl(
      * @param text the text to be sent.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun sendText(text: String, actionDelay: Duration?) {
-        adbProcess.adbSendTextProcess(text, null)
-    }
+    override fun sendText(text: String, actionDelay: Duration?) = adbProcess.adbSendTextProcess(text, null)
 
     /**
      * Sends a key event to the device using ADB.
      * @param keyEvent the key event to be sent.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun sendKeyEvent(keyEvent: Int, actionDelay: Duration?) {
-        adbProcess.adbSendKeyEvent(keyEvent, actionDelay)
-    }
+    override fun sendKeyEvent(keyEvent: Int, actionDelay: Duration?) = adbProcess.adbSendKeyEvent(keyEvent, actionDelay)
+
+    /**
+     * Toggles the pointer location feature on the emulator screen.
+     * @param toggle 1 to enable pointer location, 0 to disable it.
+     */
+    override fun pointerLocation(toggle: Int) = adbProcess.adbPointerLocation(toggle)
 
     /**
      * Performs a swipe action on the device screen.

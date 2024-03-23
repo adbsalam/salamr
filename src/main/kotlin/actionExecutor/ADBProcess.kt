@@ -46,16 +46,39 @@ class ADBProcess(
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
     }
 
+
+    /**
+     * Sends text input to the emulator.
+     *
+     * @param text The text to send.
+     * @param actionDelay Optional delay after the action is performed.
+     */
     fun adbSendTextProcess(text: String, actionDelay: Duration?) {
         val process = ProcessBuilder("adb", "shell", "input", "text", "'$text'").start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
     }
 
+    /**
+     * Sends a key event to the emulator.
+     *
+     * @param keyEvent The key event to send (e.g., KEYCODE_BACK).
+     * @param actionDelay Optional delay after the action is performed.
+     */
     fun adbSendKeyEvent(keyEvent: Int, actionDelay: Duration?) {
         val process = ProcessBuilder("adb", "shell", "input", "keyevent", "$keyEvent").start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
+    }
+
+    /**
+     * Toggles the pointer location feature on the emulator screen.
+     *
+     * @param toggle 1 to enable pointer location, 0 to disable it.
+     */
+    fun adbPointerLocation(toggle: Int) {
+        val process = ProcessBuilder("adb", "shell", "settings", "put", "system", "pointer_location", "$toggle").start()
+        process.waitFor()
     }
 
     /**
