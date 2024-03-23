@@ -1,5 +1,5 @@
 # salamr
-![salamar](https://img.shields.io/badge/salamr_command_line-Experimental_1.0.2-blue)
+![salamar](https://img.shields.io/badge/salamr_command_line_1.0.4-blue)
 
 Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can repliacte
 
