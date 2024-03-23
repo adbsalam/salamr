@@ -6,7 +6,8 @@ enum class Options(val arg: String) {
     Record("-r"),
     Play("-p"),
     Delete("-d"),
-    Track("-t")
+    Track("-t"),
+    Pointer("-s")
 }
 
 enum class RecordOptions(val arg: String) {
