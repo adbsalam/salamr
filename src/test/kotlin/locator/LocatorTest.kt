@@ -2,6 +2,7 @@ package locator
 
 import actionExecutor.ActionExecutor
 import actionExecutor.KeyEvent
+import core.Delay
 import core.DirManager
 import core.Duration
 import core.fakes.ExceptionType
@@ -10,6 +11,7 @@ import core.fakes.FakeXmlParser
 import core.validator.assertThrowsSystemExit
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,6 +33,8 @@ class LocatorTest {
         every { actionExecutor.sendText(any(), any()) }.answers { }
         every { actionExecutor.sendKeyEvent(any(), any()) }.answers { }
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
+        mockkObject(Delay)
+        every { Delay.ofSeconds(any()) }.answers {  }
     }
 
 

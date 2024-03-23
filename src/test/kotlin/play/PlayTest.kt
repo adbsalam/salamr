@@ -2,11 +2,13 @@ package play
 
 import actionExecutor.ActionExecutor
 import actionExecutor.SwipeAction
+import core.Delay
 import core.DirManager
 import core.Duration
 import core.fakes.recordedInputJsonFile
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,6 +25,8 @@ class PlayTest {
         every { dirManager.getRecordedInputFileText(any()) }.returns(recordedInputJsonFile)
         every { actionExecutor.swipe(any(), any()) }.answers {}
         every { actionExecutor.tap(any(), any(), any()) }.answers { }
+        mockkObject(Delay)
+        every { Delay.ofSeconds(any()) }.answers {  }
     }
 
     @Test
