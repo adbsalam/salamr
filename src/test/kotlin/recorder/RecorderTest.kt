@@ -1,11 +1,13 @@
 package recorder
 
 import actionExecutor.ActionExecutor
+import core.Delay
 import core.fakes.*
 import core.fakes.ExceptionType.EXIT_WITH_HELP
 import core.validator.assertThrowsSystemExit
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,6 +26,8 @@ class RecorderTest {
         every { actionExecutor.getScreenResolutions() }.returns(mockScreenResolutions)
         every { actionExecutor.recordEmulatorEvents() }.returns(mockEventLogs)
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
+        mockkObject(Delay)
+        every { Delay.ofSeconds(any()) }.answers {  }
     }
 
     @Test

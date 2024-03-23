@@ -1,14 +1,12 @@
 package multi
 
 import actionExecutor.*
+import core.Delay
 import core.Duration
 import core.fakes.ExceptionType
 import core.fakes.FakeSystemExit
 import core.validator.assertThrowsSystemExit
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifyOrder
+import io.mockk.*
 import locator.Locator
 import multiLocator.MultiLocator
 import org.junit.jupiter.api.BeforeEach
@@ -28,6 +26,8 @@ class MultiLocatorTest {
         every { actionExecutor.swipe(any(), any()) }.answers { }
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
         every { locator.run(any()) }.answers { }
+        mockkObject(Delay)
+        every { Delay.ofSeconds(any()) }.answers {  }
     }
 
     @Test
