@@ -4,6 +4,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Types
 import core.moshi.moshi
+import java.util.UUID
 
 @JsonClass(generateAdapter = true)
 data class RecordedEvents(
@@ -11,10 +12,10 @@ data class RecordedEvents(
     val swipe: Swipe? = null
 ) {
     @JsonClass(generateAdapter = true)
-    data class Tap(val x: Int, val y: Int)
+    data class Tap(val uuid: String, val x: Int, val y: Int)
 
     @JsonClass(generateAdapter = true)
-    data class Swipe(val startX: Int, val startY: Int, val endX: Int, val endY: Int, val duration: Int?)
+    data class Swipe(val uuid: String, val startX: Int, val startY: Int, val endX: Int, val endY: Int, val duration: Int?)
 
     companion object {
         val recordedEventAdapter: JsonAdapter<List<RecordedEvents>>

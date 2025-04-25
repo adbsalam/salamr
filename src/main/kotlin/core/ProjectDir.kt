@@ -15,6 +15,25 @@ class DirManager {
     private val recordedJsonFile: File
         get() = File(tempProjectDir, "recorded.json")
 
+    val snapshotDirectory: File
+        get() {
+            val dir = File(tempProjectDir, "snapshots")
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+            return dir
+        }
+
+    val reportDir: File
+        get() {
+            val dir = File(tempProjectDir, "report")
+            if (!dir.exists()) {
+                dir.delete()
+                dir.mkdirs()
+            }
+            return dir
+        }
+
     fun getRecordedJsonFileText(): String {
         return recordedJsonFile.readText()
     }

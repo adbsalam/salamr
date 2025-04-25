@@ -5,10 +5,11 @@ plugins {
 }
 
 group = "uk.salam.salamr"
-version = "1.0.5"
+version = "1.0.6"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -16,6 +17,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.squareup.moshi:moshi:1.15.1")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+    implementation("com.github.romankh3:image-comparison:4.4.0")
 
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation(kotlin("test"))

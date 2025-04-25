@@ -26,10 +26,10 @@ class Record(
         log("getting screen resolutions")
         val resolutions = actionExecutor.getScreenResolutions()
 
-        log("recording emulator inputs, press any key to stop recording...")
+        log("recording emulator inputs \uD83D\uDD34, press any key to stop recording...")
         val eventList = actionExecutor.recordEmulatorEvents()
 
-        log("processing current input recording")
+        log("⏳ processing current input recording")
         eventLogManager.extractAndOutputEvents(eventList, resolutions, fileName)
     }
 

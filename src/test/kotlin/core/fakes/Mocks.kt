@@ -16,5 +16,5 @@ val mockUserInputList = listOf(
 )
 
 const val recordedInputJsonFile =
-    "[{\"swipe\":{\"startX\":599,\"startY\":1951,\"endX\":599,\"endY\":1315,\"duration\":145}},{\"tap\":{\"x\":57,\"y\":23}}]"
+    "[{\"swipe\":{\"uuid\":\"123\",\"startX\":599,\"startY\":1951,\"endX\":599,\"endY\":1315,\"duration\":145}},{\"tap\":{\"uuid\":\"123\",\"x\":57,\"y\":23}}]"
 

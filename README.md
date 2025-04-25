@@ -1,7 +1,10 @@
 # salamr
-![salamar](https://img.shields.io/badge/salamr_command_line_1.0.5-blue)
+![salamar](https://img.shields.io/badge/salamr_command_line_1.0.6-blue)
 
-Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can repliacte
+Command line tool that can help you automate android emulator by either Passing inputs as component text or by recording inputs that salamr can replicate.
+
+salamr also provides support for snapshot testing, where a journey can be replayed along with validating snapshots for each action, 
+See below to find out more about usage
 
 ## Prerequisites
 To use salamr you need to have 1 command line tool installed `adb platform tools`
@@ -44,7 +47,9 @@ salamr -r -f 'FILE_NAME_HERE'
 salamr -p
 
 # play recorded inputs
-salamr -p 'FILE_NAME_HERE'
+salamr -p 'SnapshotFlag' 'FILE_NAME_HERE'
+SnapshotFlags: "-record-snapshot" or "-verify-snapshot or "-none"
+#see snapshot section for more details
 
 # output inputs from emulator
 salamr -t
@@ -105,9 +110,22 @@ Once multiple files are recorded, these can now be used to create and run a test
 salamr -p "fileOne,fileTwo,fileThree"
 ```
 
+## Snapshots
+Snapshot actions are compatible with record and play actions. Once you record a journey using `salamr -r` you can now run following to generate golden snapshots
+```kotlin
+salamr -p -record-snapshot
+```
+This will run the joruney once and record golden snapshots. From here onwards you can run following command to replay actions along with snapshot verification
+```kotlin
+salamr -p -verify-snapshot
+```
+This will run the journey and verify the snapshots. Once journey is completed it will open test report which can be found at `~/salamr/report/report.html`
+
+Bear in mind status bar will be cut off from snapshots, to avoid status changes such as battery/time/signals causing snapshot failures. 
+Animations could potentially cause some snapshot failures, because salamr do not wait for animations to end, so if animation was different from the time journey was recorded, it may fail snapshot test.
 ## Important
 
-Currently salamr only supports finding elements by the displayed text. You cannot select an element by any other attributes. In later releases this feature will be added.
+Currently, salamr only supports finding elements by the displayed text. You cannot select an element by any other attributes. In later releases this feature will be added.
 
 watch video about salamr: [Link to usage video](https://www.linkedin.com/posts/muhammad-abdulsalam-1253a7178_salamr-salam-run-a-command-line-tool-activity-7173786881824817152-cMYG?utm_source=share&utm_medium=member_desktop)
 
