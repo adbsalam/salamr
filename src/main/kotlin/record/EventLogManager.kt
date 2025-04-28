@@ -7,8 +7,12 @@ import core.data.EventLogType
 import core.data.RecordedEvents
 import core.data.ScreenResolutions
 import core.data.UserInput
+import java.util.*
 
-class EventLogManager(private val dirManager: DirManager = DirManager()) {
+class EventLogManager(
+    private val uuidGenerator: UUIDGenerator = DefaultUUIDGenerator(),
+    private val dirManager: DirManager = DirManager()
+) {
 
     private lateinit var screenResolutions: ScreenResolutions
     private var fileName: String? = null
@@ -205,9 +209,17 @@ class EventLogManager(private val dirManager: DirManager = DirManager()) {
 
         val listOfRecordedEvents: List<RecordedEvents> = userInputs.map {
             when (it) {
-                is UserInput.Tap -> RecordedEvents(tap = RecordedEvents.Tap(it.x, it.y))
+                is UserInput.Tap -> RecordedEvents(
+                    tap = RecordedEvents.Tap(
+                        uuid = uuidGenerator.generate(),
+                        x = it.x,
+                        y = it.y
+                    )
+                )
+
                 is UserInput.Swipe -> RecordedEvents(
                     swipe = RecordedEvents.Swipe(
+                        uuid = uuidGenerator.generate(),
                         startX = it.startX,
                         startY = it.startY,
                         endX = it.endX,

@@ -1,4 +1,6 @@
 import core.Options
+import core.SnapshotArgs
+import core.extractScreenshotArg
 import delete.Delete
 import help.showHelp
 import multiLocator.MultiLocator
@@ -16,7 +18,6 @@ fun main(args: Array<String>) {
     when {
         args.isEmpty() || args.isBlank() -> showHelp("No option passed for salamr. Read below information on usage:")
         args.isInvalidOption() -> showHelp("${args[0]} is an invalid option. Read below information on usage:")
-        args.isInputSizeInvalid() -> showHelp("invalid usage, salamr only requires 1 arg. Read below information on usage:")
         else -> handleOption(args)
     }
 }
@@ -38,7 +39,7 @@ private fun handleOption(
         Options.Help -> showHelp(showElementSummary = true)
         Options.Multi -> multiLocator.run(args.getOrNull(1))
         Options.Record -> record.run(args)
-        Options.Play -> play.run(args.getOrNull(1))
+        Options.Play -> play.run(args.extractScreenshotArg(), args.getOrNull(2))
         Options.Delete -> delete.run(args.getOrNull(1))
         Options.Pointer -> pointer.run(args.getOrNull(1))
         Options.Track -> tracker.run()
@@ -50,13 +51,6 @@ private fun handleOption(
  */
 private fun Array<String>.isInvalidOption(): Boolean {
     return !Options.entries.any { it.arg == this[0] }
-}
-
-/**
- * size 2 is minimum as 1 option and 1 arg anything more is wrong
- */
-private fun Array<String>.isInputSizeInvalid(): Boolean {
-    return this.isEmpty()
 }
 
 /**
