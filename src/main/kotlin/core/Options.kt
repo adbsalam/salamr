@@ -10,6 +10,15 @@ enum class Options(val arg: String) {
     Pointer("-s")
 }
 
+enum class IOSOptions(val arg: String) {
+    Record("-r"),
+    Play("-p");
+
+    companion object{
+        const val IOS_ARG = "-ios"
+    }
+}
+
 enum class SnapshotArgs(val arg: String) {
     Record("-record-snapshot"),
     Verify("-verify-snapshot"),

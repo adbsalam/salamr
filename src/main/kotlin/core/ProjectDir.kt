@@ -34,6 +34,9 @@ class DirManager {
             return dir
         }
 
+    val iosLogsFile
+        get() = File("${tempProjectDir}/ios_record_logs.txt")
+
     fun getRecordedJsonFileText(): String {
         return recordedJsonFile.readText()
     }

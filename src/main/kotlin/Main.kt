@@ -1,8 +1,10 @@
+import core.IOSOptions
 import core.Options
-import core.SnapshotArgs
 import core.extractScreenshotArg
 import delete.Delete
 import help.showHelp
+import ios.IOSPlay
+import ios.record.IOSRecord
 import multiLocator.MultiLocator
 import play.Play
 import pointer.Pointer
@@ -18,6 +20,7 @@ fun main(args: Array<String>) {
     when {
         args.isEmpty() || args.isBlank() -> showHelp("No option passed for salamr. Read below information on usage:")
         args.isInvalidOption() -> showHelp("${args[0]} is an invalid option. Read below information on usage:")
+        args[0].contains(IOSOptions.IOS_ARG) -> handleIOSOptions(args)
         else -> handleOption(args)
     }
 }
@@ -46,11 +49,20 @@ private fun handleOption(
     }
 }
 
+private fun handleIOSOptions(
+    args: Array<String>,
+) {
+    when (IOSOptions.entries.first { it.arg == args[1] }) {
+        IOSOptions.Record -> IOSRecord().run()
+        IOSOptions.Play -> IOSPlay().run()
+    }
+}
+
 /**
  * user must have passed a valid option
  */
 private fun Array<String>.isInvalidOption(): Boolean {
-    return !Options.entries.any { it.arg == this[0] }
+    return !Options.entries.any { it.arg == this[0] } && !this[0].contains(IOSOptions.IOS_ARG)
 }
 
 /**
