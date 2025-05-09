@@ -7,9 +7,8 @@ import record.EventLogManager
 
 class Tracker(
     private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
-    private val eventLogManager: EventLogManager = EventLogManager()
+    private val eventLogManager: EventLogManager = EventLogManager(),
 ) {
-
     fun run() {
         log("getting screen resolutions")
         val resolutions = actionExecutor.getScreenResolutions()
@@ -31,5 +30,4 @@ class Tracker(
             println("   $index : $item")
         }
     }
-
 }

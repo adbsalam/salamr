@@ -42,7 +42,12 @@ tasks.jar {
         destinationDirectory.set(file("${projectDir.path}/jar/"))
     }
     from(sourceSets.main.get().output)
-    from(configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) })
+    from(
+        configurations.runtimeClasspath
+            .get()
+            .filter { it.exists() }
+            .map { if (it.isDirectory) it else zipTree(it) },
+    )
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
 }

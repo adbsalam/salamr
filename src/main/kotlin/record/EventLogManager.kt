@@ -11,9 +11,8 @@ import java.util.*
 
 class EventLogManager(
     private val uuidGenerator: UUIDGenerator = DefaultUUIDGenerator(),
-    private val dirManager: DirManager = DirManager()
+    private val dirManager: DirManager = DirManager(),
 ) {
-
     private lateinit var screenResolutions: ScreenResolutions
     private var fileName: String? = null
 
@@ -23,7 +22,11 @@ class EventLogManager(
      * @param input The list of input logs.
      * @param screenRes The screen resolutions.
      */
-    fun extractAndOutputEvents(input: List<String>, screenRes: ScreenResolutions, file: String?) {
+    fun extractAndOutputEvents(
+        input: List<String>,
+        screenRes: ScreenResolutions,
+        file: String?,
+    ) {
         screenResolutions = screenRes
         fileName = file
         val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
@@ -39,7 +42,10 @@ class EventLogManager(
      * @param screenRes Current emulator screen resolutions
      * @return A list of UserInput objects representing the extracted user input events.
      */
-    fun extractEvents(input: List<String>, screenRes: ScreenResolutions): List<UserInput> {
+    fun extractEvents(
+        input: List<String>,
+        screenRes: ScreenResolutions,
+    ): List<UserInput> {
         screenResolutions = screenRes
         val eventLogsByTypes = splitInputLogsByType(input.joinToString("\n"))
         return eventLogsByTypes.mapNotNull { getUserInput(it) }
@@ -108,7 +114,10 @@ class EventLogManager(
      * @param logY The event log representing the Y position.
      * @return A Tap event object with scaled coordinates, or null if the coordinates are invalid.
      */
-    private fun getTapEvent(logX: String, logY: String): UserInput.Tap? {
+    private fun getTapEvent(
+        logX: String,
+        logY: String,
+    ): UserInput.Tap? {
         val x = convertToAdbLog(logX)?.value?.toInt(16) ?: 0
         val y = convertToAdbLog(logY)?.value?.toInt(16) ?: 0
 
@@ -132,7 +141,6 @@ class EventLogManager(
      * @return A Swipe event object with scaled coordinates and duration, or null if the coordinates are invalid.
      */
     private fun getSwipeEvent(logs: List<String>): UserInput.Swipe? {
-
         infix fun Int.scaleTo(screenRes: Int) = (this * screenRes) / 32767
 
         val logsList = logs.map { convertToAdbLog(it) }
@@ -191,9 +199,7 @@ class EventLogManager(
      * output [135065.485653] /dev/input/event1: EV_SYN SYN_REPORT 00000000
      * leaving 1 space between blocks
      */
-    private fun removeExtraSpaces(input: String): String {
-        return input.replace(Regex("\\s+"), " ")
-    }
+    private fun removeExtraSpaces(input: String): String = input.replace(Regex("\\s+"), " ")
 
     /**
      * write stored coordinates into temp file
@@ -207,28 +213,33 @@ class EventLogManager(
         Logger.log("saving current input recording")
         dirManager.validateTempDir()
 
-        val listOfRecordedEvents: List<RecordedEvents> = userInputs.map {
-            when (it) {
-                is UserInput.Tap -> RecordedEvents(
-                    tap = RecordedEvents.Tap(
-                        uuid = uuidGenerator.generate(),
-                        x = it.x,
-                        y = it.y
-                    )
-                )
+        val listOfRecordedEvents: List<RecordedEvents> =
+            userInputs.map {
+                when (it) {
+                    is UserInput.Tap ->
+                        RecordedEvents(
+                            tap =
+                                RecordedEvents.Tap(
+                                    uuid = uuidGenerator.generate(),
+                                    x = it.x,
+                                    y = it.y,
+                                ),
+                        )
 
-                is UserInput.Swipe -> RecordedEvents(
-                    swipe = RecordedEvents.Swipe(
-                        uuid = uuidGenerator.generate(),
-                        startX = it.startX,
-                        startY = it.startY,
-                        endX = it.endX,
-                        endY = it.endY,
-                        duration = it.duration
-                    )
-                )
+                    is UserInput.Swipe ->
+                        RecordedEvents(
+                            swipe =
+                                RecordedEvents.Swipe(
+                                    uuid = uuidGenerator.generate(),
+                                    startX = it.startX,
+                                    startY = it.startY,
+                                    endX = it.endX,
+                                    endY = it.endY,
+                                    duration = it.duration,
+                                ),
+                        )
+                }
             }
-        }
         val eventsList = RecordedEvents.recordedEventAdapter.toJson(listOfRecordedEvents)
         Logger.log("process complete. recorded ${userInputs.size} inputs")
         dirManager.writeToFile(eventsList.toString(), fileName)

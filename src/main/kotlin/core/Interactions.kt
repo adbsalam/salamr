@@ -1,6 +1,8 @@
 package core
 
-enum class Interactions(val inputName: String) {
+enum class Interactions(
+    val inputName: String,
+) {
     SystemBack("B"),
     SwipeUp("SU"),
     SwipeDown("SD"),
@@ -9,5 +11,5 @@ enum class Interactions(val inputName: String) {
     DelayIn("D"),
     KeyCode("K"),
     Coordinates("C"),
-    Other("")
+    Other(""),
 }

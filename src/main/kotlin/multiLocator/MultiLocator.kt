@@ -11,7 +11,7 @@ import locator.Locator
  */
 class MultiLocator(
     private val locator: Locator = Locator(),
-    private val actionExecutor: ActionExecutor = ActionExecutorImpl()
+    private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
 ) {
     /**
      * Parses the given list of strings joined with "," into individual strings and performs actions on each item.
@@ -47,7 +47,10 @@ class MultiLocator(
      * @param input the input string representing the swipe action.
      * @param direction the direction of the swipe action.
      */
-    private fun performSwipe(input: String, direction: Direction) {
+    private fun performSwipe(
+        input: String,
+        direction: Direction,
+    ) {
         if (input.containsOptions()) {
             handleSwipeWithParameters(input, direction)
         } else {
@@ -60,14 +63,19 @@ class MultiLocator(
      * @param input the input string representing the swipe action with parameters.
      * @param direction the direction of the swipe action.
      */
-    private fun handleSwipeWithParameters(input: String, direction: Direction) {
+    private fun handleSwipeWithParameters(
+        input: String,
+        direction: Direction,
+    ) {
         try {
             // remove prefix of swipe
             val swipeOptionsString = input.removeRange(IntRange(0, 1)).removeBrackets()
 
             val swipeOptions = swipeOptionsString.split(",")
             if (swipeOptions.size < 4) {
-                actionExecutor.systemExit.exitWithHelp("invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 500))\"")
+                actionExecutor.systemExit.exitWithHelp(
+                    "invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 500))\"",
+                )
             }
             val x = swipeOptions.first().toDoubleOrNull()
             val y = swipeOptions[1].toDoubleOrNull()
@@ -86,18 +94,20 @@ class MultiLocator(
 
                 actionExecutor.swipe(
                     actionDelay = Duration(1.0),
-                    input = SwipeAction.Custom(
-                        startX = x.toInt(),
-                        startY = y.toInt(),
-                        endX = endX.toInt(),
-                        endY = endY.toInt(),
-                        duration = duration.toInt()
-                    )
+                    input =
+                        SwipeAction.Custom(
+                            startX = x.toInt(),
+                            startY = y.toInt(),
+                            endX = endX.toInt(),
+                            endY = endY.toInt(),
+                            duration = duration.toInt(),
+                        ),
                 )
             } else {
-                actionExecutor.systemExit.exitWithHelp("invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 0.5))")
+                actionExecutor.systemExit.exitWithHelp(
+                    "invalid options for Swipe, Swipe takes 4 values - x,y,amount,duration, usage example: SF(100,100, 1000, 0.5))",
+                )
             }
-
         } catch (e: Exception) {
             actionExecutor.systemExit.exitWithHelp("S do not have valid coordinates, usage example: S(x,y,amount,duration) such as S()")
         }
@@ -143,7 +153,9 @@ class MultiLocator(
         val cleanInput = input.removePrefix(KeyCode.inputName).removeBrackets()
         val keyEvents = cleanInput.split(",")
         if (keyEvents.isEmpty()) {
-            actionExecutor.systemExit.exitWithHelp("KeyEvent $input do not have correct values for x and Y, usage: K(int,int...) - K(100,100)")
+            actionExecutor.systemExit.exitWithHelp(
+                "KeyEvent $input do not have correct values for x and Y, usage: K(int,int...) - K(100,100)",
+            )
         }
 
         keyEvents.forEach { keyCode ->
@@ -157,8 +169,8 @@ class MultiLocator(
      * @param inputName the input string to be converted.
      * @return the corresponding Interactions enum element.
      */
-    private fun convertToElement(inputName: String): Interactions {
-        return when {
+    private fun convertToElement(inputName: String): Interactions =
+        when {
             inputName isType SwipeDown -> SwipeDown
             inputName isType SwipeRight -> SwipeRight
             inputName isType SwipeLeft -> SwipeLeft
@@ -168,7 +180,6 @@ class MultiLocator(
             inputName isType KeyCode -> KeyCode
             else -> Interactions.entries.firstOrNull { it.inputName == inputName } ?: Other
         }
-    }
 
     /**
      * Checks if the input string represents the specified interaction.
@@ -180,5 +191,4 @@ class MultiLocator(
         if (isOptionText.length > 2) return false
         return this.startsWith(interactions.inputName)
     }
-
 }

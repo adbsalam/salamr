@@ -9,9 +9,8 @@ import kotlin.system.exitProcess
 private const val deleteAll = "all"
 
 class Delete(
-    private val dirManager: DirManager = DirManager()
+    private val dirManager: DirManager = DirManager(),
 ) {
-
     /**
      * Runs the deletion process based on the provided arguments.
      * @param args the arguments passed to the function.

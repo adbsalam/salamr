@@ -10,9 +10,8 @@ import javax.imageio.ImageIO
 class ImageComparisonManager(
     private val snapshotManager: SnapshotManager = SnapshotManager(),
     private val dirManager: DirManager = DirManager(),
-    private val snapshotReportGenerator: SnapshotReportGenerator = SnapshotReportGenerator()
+    private val snapshotReportGenerator: SnapshotReportGenerator = SnapshotReportGenerator(),
 ) {
-
     /**
      * Step 1: Create a name with prefix _generated such as asd123.png will generate name as asd123_generated.png
      * This is to match the correct generated image with the golden image
@@ -28,9 +27,12 @@ class ImageComparisonManager(
      * @param id The id of the image to compare
      * @return ReportFile object containing the paths to the golden and diff images
      */
-    fun compareImage(id: String): ReportFile? {
+    fun compareImage(
+        id: String,
+        isIos: Boolean = false,
+    ): ReportFile? {
         val generatedImageId = "${id}_generated"
-        snapshotManager.takeScreenshot(generatedImageId) // capture latest
+        snapshotManager.takeScreenshot(generatedImageId, isIos) // capture latest
         Thread.sleep(1000)
 
         val goldenImageFileName = File(dirManager.snapshotDirectory, "$id.png")
@@ -44,20 +46,22 @@ class ImageComparisonManager(
         val golden = ImageIO.read(goldenImageFileName)
         val latest = ImageIO.read(generatedImageFileName)
 
-        val comparison = ImageComparison(latest, golden)
-            .setDifferenceRectangleFilling(true, 0.5)
-            .setRectangleLineWidth(3)
-            .setThreshold(5)
+        val comparison =
+            ImageComparison(latest, golden)
+                .setDifferenceRectangleFilling(true, 0.5)
+                .setRectangleLineWidth(3)
+                .setThreshold(5)
 
         val result = comparison.compareImages()
         val icon = if (result.imageComparisonState == ImageComparisonState.MATCH) "✔\uFE0F" else "❌"
         println("Comparison result: $icon ${result.imageComparisonState}")
         if (result.imageComparisonState == ImageComparisonState.MISMATCH) {
-            val reportFile = handleMisMatchResult(
-                generatedImageId = generatedImageId,
-                generatedImageFileName = generatedImageFileName,
-                result = result
-            )
+            val reportFile =
+                handleMisMatchResult(
+                    generatedImageId = generatedImageId,
+                    generatedImageFileName = generatedImageFileName,
+                    result = result,
+                )
             return reportFile
         }
         return null
@@ -78,19 +82,19 @@ class ImageComparisonManager(
     private fun handleMisMatchResult(
         generatedImageId: String,
         generatedImageFileName: File,
-        result: ImageComparisonResult
+        result: ImageComparisonResult,
     ): ReportFile {
         val failedImageFile = File(dirManager.reportDir, "$generatedImageId-report.png")
 
         snapshotReportGenerator.copyFileToReportDirectory(
             sourceFile = generatedImageFileName,
-            reportDirectory = dirManager.reportDir
+            reportDirectory = dirManager.reportDir,
         )
 
         ImageIO.write(result.result, "png", failedImageFile)
         return ReportFile(
             goldenImage = failedImageFile,
-            diffFile = File(dirManager.reportDir, "$generatedImageId.png")
+            diffFile = File(dirManager.reportDir, "$generatedImageId.png"),
         )
     }
 }

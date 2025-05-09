@@ -5,13 +5,12 @@ import actionExecutor.ActionExecutorImpl
 import core.Logger.log
 import core.RecordOptions
 
-
 /**
  * record helps record user inputs that cna be played
  */
 class Record(
     private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
-    private val eventLogManager: EventLogManager = EventLogManager()
+    private val eventLogManager: EventLogManager = EventLogManager(),
 ) {
     /**
      * Start task to start recording inputs

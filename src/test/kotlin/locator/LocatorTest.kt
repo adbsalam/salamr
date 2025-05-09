@@ -16,9 +16,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-
 class LocatorTest {
-
     private val dirManager: DirManager = mockk()
     private val actionExecutor: ActionExecutor = mockk()
     private val xmlParser: XmlParser = FakeXmlParser() // creates adb/dump.xml as document
@@ -34,9 +32,8 @@ class LocatorTest {
         every { actionExecutor.sendKeyEvent(any(), any()) }.answers { }
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
         mockkObject(Delay)
-        every { Delay.ofSeconds(any()) }.answers {  }
+        every { Delay.ofSeconds(any()) }.answers { }
     }
-
 
     @Test
     fun `when element is requested without index, and element exists on screen, find and tap element`() {
@@ -89,5 +86,4 @@ class LocatorTest {
             locator.run("TF")
         }
     }
-
 }

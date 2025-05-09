@@ -1,5 +1,8 @@
 package actionExecutor
 
 enum class Direction {
-    DownToUp, UpToDown, LeftToRight, RightToLeft
+    DownToUp,
+    UpToDown,
+    LeftToRight,
+    RightToLeft,
 }

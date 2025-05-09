@@ -2,7 +2,6 @@ package tracker
 
 import actionExecutor.ActionExecutor
 import core.Delay
-import core.DirManager
 import core.fakes.mockEventLogs
 import core.fakes.mockScreenResolutions
 import core.fakes.mockUserInputList
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test
 import record.EventLogManager
 
 class TrackerTest {
-
     private val eventLogManager: EventLogManager = mockk()
     private val actionExecutor: ActionExecutor = mockk()
     private val tracker = Tracker(actionExecutor, eventLogManager)
@@ -37,5 +35,4 @@ class TrackerTest {
         verify { actionExecutor.recordEmulatorEvents() }
         verify { eventLogManager.extractEvents(mockEventLogs, mockScreenResolutions) }
     }
-
 }

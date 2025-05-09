@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PlayTest {
-
     private val actionExecutor: ActionExecutor = mockk()
     private val dirManager: DirManager = mockk()
     private val snapshotReportGenerator: SnapshotReportGenerator = mockk()
@@ -26,7 +25,7 @@ class PlayTest {
             actionExecutor = actionExecutor,
             snapshotReportGenerator = snapshotReportGenerator,
             snapshotManager = snapshotManager,
-            imageComparisonManager = imageComparisonManager
+            imageComparisonManager = imageComparisonManager,
         )
 
     @BeforeEach
@@ -38,7 +37,7 @@ class PlayTest {
         every { dirManager.reportDir }.answers { mockk() }
         every { dirManager.reportDir.exists() }.answers { false }
         every { dirManager.snapshotDirectory.exists() }.answers { true }
-        every { snapshotReportGenerator.generateHtmlFromReportFiles(any()) }.answers {  }
+        every { snapshotReportGenerator.generateHtmlFromReportFiles(any()) }.answers { }
         mockkObject(Delay)
         every { Delay.ofSeconds(any()) }.answers { }
     }
@@ -57,4 +56,3 @@ class PlayTest {
         verify(exactly = 2) { actionExecutor.swipe(ActionExecutor.swipeInterceptEvent, Duration(0.5)) }
     }
 }
-

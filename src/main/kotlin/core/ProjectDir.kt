@@ -34,15 +34,18 @@ class DirManager {
             return dir
         }
 
-    fun getRecordedJsonFileText(): String {
-        return recordedJsonFile.readText()
-    }
+    val iosLogsFile
+        get() = File("$tempProjectDir/ios_record_logs.json")
+
+    fun getRecordedJsonFileText(): String = recordedJsonFile.readText()
 
     fun getRecordedInputFileText(file: String): String {
-        val recordedFile = File("$tempProjectDir/${file}.json")
+        val recordedFile = File("$tempProjectDir/$file.json")
         return if (recordedFile.exists()) {
             recordedFile.readText()
-        } else ""
+        } else {
+            ""
+        }
     }
 
     fun validateTempDir() {
@@ -51,7 +54,10 @@ class DirManager {
         }
     }
 
-    fun writeToFile(text: String, fileName: String?) {
+    fun writeToFile(
+        text: String,
+        fileName: String?,
+    ) {
         if (fileName != null) {
             val file = File(tempProjectDir, "$fileName.json")
             file.writeText(text)
@@ -71,7 +77,7 @@ class DirManager {
     fun deleteMultiple(files: String) {
         files.split(",").forEach {
             Logger.log("deleting file $it")
-            val file = File("${tempProjectDir}/$it.json")
+            val file = File("$tempProjectDir/$it.json")
             if (file.exists()) {
                 file.delete()
             }

@@ -6,10 +6,11 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 class SnapshotReportGenerator(
-    private val dirManager: DirManager = DirManager()
+    private val dirManager: DirManager = DirManager(),
 ) {
     private fun String.escapeHtml(): String =
-        this.replace("&", "&amp;")
+        this
+            .replace("&", "&amp;")
             .replace("<", "&lt;")
             .replace(">", "&gt;")
             .replace("\"", "&quot;")
@@ -23,15 +24,14 @@ class SnapshotReportGenerator(
      *
      * @param reportFiles List of ReportFile objects containing the paths to the golden and diff images
      */
-    fun generateHtmlFromReportFiles(
-        reportFiles: List<ReportFile>,
-    ) {
+    fun generateHtmlFromReportFiles(reportFiles: List<ReportFile>) {
         deleteAllGeneratedSnapshotsIfExist()
-        val html = if (reportFiles.isEmpty()) {
-            generateAllSnapshotsMatchedHtml()
-        } else {
-            generateFailedSnapshotsReport(reportFiles)
-        }
+        val html =
+            if (reportFiles.isEmpty()) {
+                generateAllSnapshotsMatchedHtml()
+            } else {
+                generateFailedSnapshotsReport(reportFiles)
+            }
 
         val reportFile = File(dirManager.reportDir, "report.html")
         reportFile.writeText(html)
@@ -44,65 +44,65 @@ class SnapshotReportGenerator(
      *
      * @param reportFiles List of ReportFile objects containing the paths to the golden and diff images
      */
-    private fun generateFailedSnapshotsReport(
-        reportFiles: List<ReportFile>
-    ): String {
-        val rows = reportFiles.joinToString("\n") { report ->
-            val goldenName = report.goldenImage.absolutePath.escapeHtml()
-            val diffName = report.diffFile.absolutePath.escapeHtml()
+    private fun generateFailedSnapshotsReport(reportFiles: List<ReportFile>): String {
+        val rows =
+            reportFiles.joinToString("\n") { report ->
+                val goldenName = report.goldenImage.absolutePath.escapeHtml()
+                val diffName = report.diffFile.absolutePath.escapeHtml()
 
-            """
-        <tr>
-            <td>
-                <div>$goldenName</div>
-                <img src="$goldenName" alt="Diff">
-            </td>
-            <td>
-                <div>$diffName</div>
-                <img src="$diffName" alt="Latest">
-            </td>
-        </tr>
-        """.trimIndent()
-        }
+                """
+                <tr>
+                    <td>
+                        <div>$goldenName</div>
+                        <img src="$goldenName" alt="Diff">
+                    </td>
+                    <td>
+                        <div>$diffName</div>
+                        <img src="$diffName" alt="Latest">
+                    </td>
+                </tr>
+                """.trimIndent()
+            }
 
         return """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8" />
-            <title>Image Diff Report</title>
-            <style>
-                body { font-family: sans-serif; padding: 20px; }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { border: 1px solid #ddd; padding: 10px; text-align: center; vertical-align: top; }
-                th { background-color: #f0f0f0; }
-                img { max-width: 100%; max-height: 400px; }
-                div { margin-bottom: 8px; font-size: 14px; font-weight: bold; }
-            </style>
-        </head>
-        <body>
-            <h1>🧪 Image Diff Report</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Diff</th>
-                        <th>Latest</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    $rows
-                </tbody>
-            </table>
-        </body>
-        </html>
-    """.trimIndent()
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <title>Image Diff Report</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; vertical-align: top; }
+                    th { background-color: #f0f0f0; }
+                    img { max-width: 100%; max-height: 400px; }
+                    div { margin-bottom: 8px; font-size: 14px; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <h1>🧪 Image Diff Report</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Diff</th>
+                            <th>Latest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        $rows
+                    </tbody>
+                </table>
+            </body>
+            </html>
+            """.trimIndent()
     }
 
     /**
      * Generate HTML report indicating that all snapshots matched
      * This is a success report
      */
-    private fun generateAllSnapshotsMatchedHtml(): String = """
+    private fun generateAllSnapshotsMatchedHtml(): String =
+        """
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -125,7 +125,7 @@ class SnapshotReportGenerator(
             <p>All the snapshots have been compared and are identical!</p>
         </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 
     /**
      * Copy a file to the report directory
@@ -134,7 +134,10 @@ class SnapshotReportGenerator(
      * @param sourceFile The source file to copy
      * @param reportDirectory The destination directory where the file will be copied
      */
-    fun copyFileToReportDirectory(sourceFile: File, reportDirectory: File) {
+    fun copyFileToReportDirectory(
+        sourceFile: File,
+        reportDirectory: File,
+    ) {
         if (!reportDirectory.exists()) {
             reportDirectory.mkdirs()
         }
@@ -152,11 +155,13 @@ class SnapshotReportGenerator(
      * This will be called when new test is started to clean up generated snapshots from snapshot directory
      */
     private fun deleteAllGeneratedSnapshotsIfExist() {
-        dirManager.snapshotDirectory.listFiles { file ->
-            file.isFile && file.name.matches(Regex(".*_generated.png"))
-        }?.toList()?.forEach {
-            it.delete()
-        }
+        dirManager.snapshotDirectory
+            .listFiles { file ->
+                file.isFile && file.name.matches(Regex(".*_generated.png"))
+            }?.toList()
+            ?.forEach {
+                it.delete()
+            }
     }
 
     private fun openReportInChrome() {
@@ -167,7 +172,6 @@ class SnapshotReportGenerator(
             println("Failed to open report in Chrome: ${e.message}")
         }
     }
-
 }
 
 data class ReportFile(

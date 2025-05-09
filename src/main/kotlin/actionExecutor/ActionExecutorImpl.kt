@@ -5,9 +5,8 @@ import core.SystemExitImpl
 
 class ActionExecutorImpl(
     private val adbProcess: ADBProcess = ADBProcess(),
-    private val sysExit: SystemExit = SystemExitImpl()
+    private val sysExit: SystemExit = SystemExitImpl(),
 ) : ActionExecutor {
-
     /**
      * Retrieves the screen resolutions using ADB.
      * @return a list of screen resolutions.
@@ -30,21 +29,31 @@ class ActionExecutorImpl(
      * @param y the y-coordinate.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun tap(x: Int, y: Int, actionDelay: Duration?) = adbProcess.adbTapProcess(x, y, actionDelay)
+    override fun tap(
+        x: Int,
+        y: Int,
+        actionDelay: Duration?,
+    ) = adbProcess.adbTapProcess(x, y, actionDelay)
 
     /**
      * Sends text input to the device using ADB.
      * @param text the text to be sent.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun sendText(text: String, actionDelay: Duration?) = adbProcess.adbSendTextProcess(text, null)
+    override fun sendText(
+        text: String,
+        actionDelay: Duration?,
+    ) = adbProcess.adbSendTextProcess(text, null)
 
     /**
      * Sends a key event to the device using ADB.
      * @param keyEvent the key event to be sent.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun sendKeyEvent(keyEvent: Int, actionDelay: Duration?) = adbProcess.adbSendKeyEvent(keyEvent, actionDelay)
+    override fun sendKeyEvent(
+        keyEvent: Int,
+        actionDelay: Duration?,
+    ) = adbProcess.adbSendKeyEvent(keyEvent, actionDelay)
 
     /**
      * Toggles the pointer location feature on the emulator screen.
@@ -57,7 +66,10 @@ class ActionExecutorImpl(
      * @param input the swipe action to perform.
      * @param actionDelay optional delay before performing the action.
      */
-    override fun swipe(input: SwipeAction, actionDelay: Duration?) {
+    override fun swipe(
+        input: SwipeAction,
+        actionDelay: Duration?,
+    ) {
         when (input) {
             is SwipeAction.Directional -> {
                 val (screenWidth, screenHeight) = adbProcess.adbGetScreenDimensions()
@@ -82,7 +94,7 @@ class ActionExecutorImpl(
                     endX = input.endX,
                     endY = input.endY,
                     duration = input.duration,
-                    actionDelay = actionDelay
+                    actionDelay = actionDelay,
                 )
         }
     }
@@ -93,4 +105,3 @@ class ActionExecutorImpl(
     override val systemExit: SystemExit
         get() = sysExit
 }
-

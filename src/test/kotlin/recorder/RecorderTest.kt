@@ -15,7 +15,6 @@ import record.EventLogManager
 import record.Record
 
 class RecorderTest {
-
     private val eventLogManager: EventLogManager = mockk()
     private val actionExecutor: ActionExecutor = mockk()
     private val record = Record(actionExecutor, eventLogManager)
@@ -26,7 +25,7 @@ class RecorderTest {
         every { actionExecutor.recordEmulatorEvents() }.returns(mockEventLogs)
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
         mockkObject(Delay)
-        every { Delay.ofSeconds(any()) }.answers {  }
+        every { Delay.ofSeconds(any()) }.answers { }
     }
 
     @Test
@@ -64,6 +63,4 @@ class RecorderTest {
             record.run(arrayOf("-r", "test"))
         }
     }
-
 }
-

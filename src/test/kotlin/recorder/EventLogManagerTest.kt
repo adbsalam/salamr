@@ -16,7 +16,6 @@ import java.util.*
 import kotlin.test.assertEquals
 
 class EventLogManagerTest {
-
     private val dirManager: DirManager = mockk()
     private val uuidGenerator: UUIDGenerator = mockk()
     private val eventLogManager = EventLogManager(uuidGenerator, dirManager)
@@ -34,9 +33,12 @@ class EventLogManagerTest {
         eventLogManager.extractAndOutputEvents(mockEventLogs, mockScreenResolutions, null)
 
         verify {
-            dirManager.writeToFile(withArg {
-                println(it)
-            }, null)
+            dirManager.writeToFile(
+                withArg {
+                    println(it)
+                },
+                null,
+            )
         }
     }
 

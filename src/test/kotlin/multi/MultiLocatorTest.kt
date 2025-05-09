@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class MultiLocatorTest {
-
     private val locator: Locator = mockk()
     private val actionExecutor: ActionExecutor = mockk()
     private val multiLocator = MultiLocator(locator, actionExecutor)
@@ -27,7 +26,7 @@ class MultiLocatorTest {
         every { actionExecutor.systemExit }.returns(FakeSystemExit())
         every { locator.run(any()) }.answers { }
         mockkObject(Delay)
-        every { Delay.ofSeconds(any()) }.answers {  }
+        every { Delay.ofSeconds(any()) }.answers { }
     }
 
     @Test
@@ -45,13 +44,14 @@ class MultiLocatorTest {
         verify(exactly = 1) {
             actionExecutor.swipe(
                 actionDelay = Duration(1.0),
-                input = SwipeAction.Custom(
-                    startY = 100,
-                    startX = 100,
-                    endX = 100,
-                    endY = 400,
-                    duration = 500
-                )
+                input =
+                    SwipeAction.Custom(
+                        startY = 100,
+                        startX = 100,
+                        endX = 100,
+                        endY = 400,
+                        duration = 500,
+                    ),
             )
         }
     }
@@ -65,13 +65,14 @@ class MultiLocatorTest {
         verify(exactly = 1) {
             actionExecutor.swipe(
                 actionDelay = Duration(1.0),
-                input = SwipeAction.Custom(
-                    startY = 100,
-                    startX = 100,
-                    endX = 100,
-                    endY = -200,
-                    duration = 500
-                )
+                input =
+                    SwipeAction.Custom(
+                        startY = 100,
+                        startX = 100,
+                        endX = 100,
+                        endY = -200,
+                        duration = 500,
+                    ),
             )
         }
     }
@@ -85,13 +86,14 @@ class MultiLocatorTest {
         verify(exactly = 1) {
             actionExecutor.swipe(
                 actionDelay = Duration(1.0),
-                input = SwipeAction.Custom(
-                    startY = 100,
-                    startX = 100,
-                    endX = 400,
-                    endY = 100,
-                    duration = 500
-                )
+                input =
+                    SwipeAction.Custom(
+                        startY = 100,
+                        startX = 100,
+                        endX = 400,
+                        endY = 100,
+                        duration = 500,
+                    ),
             )
         }
     }
@@ -105,13 +107,14 @@ class MultiLocatorTest {
         verify(exactly = 1) {
             actionExecutor.swipe(
                 actionDelay = Duration(1.0),
-                input = SwipeAction.Custom(
-                    startY = 100,
-                    startX = 100,
-                    endX = -200,
-                    endY = 100,
-                    duration = 500
-                )
+                input =
+                    SwipeAction.Custom(
+                        startY = 100,
+                        startX = 100,
+                        endX = -200,
+                        endY = 100,
+                        duration = 500,
+                    ),
             )
         }
     }
@@ -177,6 +180,4 @@ class MultiLocatorTest {
         verify(exactly = 1) { actionExecutor.sendKeyEvent(11) }
         verify(exactly = 1) { actionExecutor.sendKeyEvent(200) }
     }
-
 }
-

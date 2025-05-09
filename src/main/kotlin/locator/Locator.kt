@@ -9,15 +9,13 @@ import core.data.Coordinates
 import help.showHelp
 import org.w3c.dom.Element
 import org.w3c.dom.NodeList
-import javax.xml.parsers.DocumentBuilderFactory
-import kotlin.system.exitProcess
 
 private const val TF = "TF"
 
 class Locator(
     private val dirManager: DirManager = DirManager(),
     private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
-    private val xmlParser: XmlParser = XmlParserImpl()
+    private val xmlParser: XmlParser = XmlParserImpl(),
 ) {
     /**
      * Runs the specified action based on the given element.
@@ -49,7 +47,10 @@ class Locator(
      * @param nodes the list of XML nodes representing UI elements.
      * @param element the text field element.
      */
-    private fun handleTextField(nodes: NodeList, element: String) {
+    private fun handleTextField(
+        nodes: NodeList,
+        element: String,
+    ) {
         val (index, text) = parseTextField(element)
         findNodeByClassName(nodes, "android.widget.EditText", index)?.let { node ->
             val bounds = node.getAttribute("bounds")
@@ -65,7 +66,10 @@ class Locator(
      * @param nodes the list of XML nodes representing UI elements.
      * @param element the tap element.
      */
-    private fun handleTapElement(nodes: NodeList, element: String) {
+    private fun handleTapElement(
+        nodes: NodeList,
+        element: String,
+    ) {
         val (index, item) = parseElement(element)
 
         findNodeByText(nodes, item, index)?.let { node ->
@@ -109,7 +113,11 @@ class Locator(
      * @param index the index of the element.
      * @return the found XML node element.
      */
-    private fun findNodeByClassName(nodes: NodeList, className: String, index: Int): Element? {
+    private fun findNodeByClassName(
+        nodes: NodeList,
+        className: String,
+        index: Int,
+    ): Element? {
         var textFieldCount = 0
 
         for (i in 0 until nodes.length) {
@@ -131,7 +139,11 @@ class Locator(
      * @param index the index of the element.
      * @return the found XML node element.
      */
-    private fun findNodeByText(nodes: NodeList, text: String, index: Int): Element? {
+    private fun findNodeByText(
+        nodes: NodeList,
+        text: String,
+        index: Int,
+    ): Element? {
         var textFieldCount = 0
 
         for (i in 0 until nodes.length) {

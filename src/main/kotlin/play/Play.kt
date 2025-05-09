@@ -27,7 +27,10 @@ class Play(
      * Collect saved coordinates from .salamr file
      * map to Coordinates data class and perform action for each
      */
-    fun run(snapshotArg: SnapshotArgs?, files: String?) {
+    fun run(
+        snapshotArg: SnapshotArgs?,
+        files: String?,
+    ) {
         log("\uD83C\uDFAC playing recorded inputs")
         if (files.isNullOrEmpty()) {
             val jsonString = dirManager.getRecordedJsonFileText()
@@ -48,7 +51,10 @@ class Play(
      * Plays back the recorded inputs stored in the provided JSON string.
      * @param eventsJson the JSON string containing recorded events.
      */
-    private fun playbackInputs(eventsJson: String, snapshotArg: SnapshotArgs?) {
+    private fun playbackInputs(
+        eventsJson: String,
+        snapshotArg: SnapshotArgs?,
+    ) {
         if (dirManager.reportDir.exists()) {
             dirManager.reportDir.deleteRecursively()
             dirManager.reportDir.mkdir()
@@ -62,7 +68,9 @@ class Play(
             log("playing recorded input ${index + 1}")
             if (event.tap != null) {
                 actionExecutor.tap(
-                    x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.0)
+                    x = event.tap.x,
+                    y = event.tap.y,
+                    actionDelay = Duration(1.0),
                 )
                 addSnapshotDelayIfRequired(snapshotArg)
                 performSnapshotActions(event.tap.uuid, snapshotArg)
@@ -73,11 +81,12 @@ class Play(
                         startY = event.swipe.startY,
                         endX = event.swipe.endX,
                         endY = event.swipe.endY,
-                        duration = event.swipe.duration
-                    )
+                        duration = event.swipe.duration,
+                    ),
                 )
                 actionExecutor.swipe(
-                    input = ActionExecutor.swipeInterceptEvent, actionDelay = Duration(0.5)
+                    input = ActionExecutor.swipeInterceptEvent,
+                    actionDelay = Duration(0.5),
                 )
                 addSnapshotDelayIfRequired(snapshotArg)
                 performSnapshotActions(event.swipe.uuid, snapshotArg)
@@ -98,16 +107,20 @@ class Play(
      * @param eventUUID the UUID of the event for which the snapshot action is performed.
      * @param snapshotArgs the snapshot argument indicating the type of action.
      */
-    private fun performSnapshotActions(eventUUID: String, snapshotArgs: SnapshotArgs?) {
+    private fun performSnapshotActions(
+        eventUUID: String,
+        snapshotArgs: SnapshotArgs?,
+    ) {
         when (snapshotArgs) {
             SnapshotArgs.Record -> snapshotManager.takeScreenshot(eventUUID)
-            SnapshotArgs.Verify -> try {
-                imageComparisonManager.compareImage(eventUUID)?.let {
-                    failedSnapshots.add(it)
+            SnapshotArgs.Verify ->
+                try {
+                    imageComparisonManager.compareImage(eventUUID)?.let {
+                        failedSnapshots.add(it)
+                    }
+                } catch (e: Exception) {
+                    println("Something went wrong while image comparison")
                 }
-            } catch (e: Exception) {
-                println("Something went wrong while image comparison")
-            }
 
             else -> {}
         }
@@ -122,10 +135,10 @@ class Play(
     private fun addSnapshotDelayIfRequired(snapshotArg: SnapshotArgs?) {
         when (snapshotArg) {
             SnapshotArgs.Record,
-            SnapshotArgs.Verify -> runBlocking { delay(500) }
+            SnapshotArgs.Verify,
+            -> runBlocking { delay(500) }
 
             else -> {}
         }
     }
-
 }

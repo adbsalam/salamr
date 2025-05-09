@@ -16,7 +16,7 @@ import kotlin.system.exitProcess
  * @param dirManager directory manager to get directories data
  */
 class ADBProcess(
-    private val dirManager: DirManager = DirManager()
+    private val dirManager: DirManager = DirManager(),
 ) {
     /**
      * `adb shell uiautomator dump` to get adb emulator screen dump
@@ -40,12 +40,15 @@ class ADBProcess(
      *
      * this process will tap on x and y coordinates of emulator screen
      */
-    fun adbTapProcess(x: Int, y: Int, actionDelay: Duration?) {
+    fun adbTapProcess(
+        x: Int,
+        y: Int,
+        actionDelay: Duration?,
+    ) {
         val process = ProcessBuilder("adb", "shell", "input", "tap", x.toString(), y.toString()).start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
     }
-
 
     /**
      * Sends text input to the emulator.
@@ -53,7 +56,10 @@ class ADBProcess(
      * @param text The text to send.
      * @param actionDelay Optional delay after the action is performed.
      */
-    fun adbSendTextProcess(text: String, actionDelay: Duration?) {
+    fun adbSendTextProcess(
+        text: String,
+        actionDelay: Duration?,
+    ) {
         val process = ProcessBuilder("adb", "shell", "input", "text", "'$text'").start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
@@ -65,7 +71,10 @@ class ADBProcess(
      * @param keyEvent The key event to send (e.g., KEYCODE_BACK).
      * @param actionDelay Optional delay after the action is performed.
      */
-    fun adbSendKeyEvent(keyEvent: Int, actionDelay: Duration?) {
+    fun adbSendKeyEvent(
+        keyEvent: Int,
+        actionDelay: Duration?,
+    ) {
         val process = ProcessBuilder("adb", "shell", "input", "keyevent", "$keyEvent").start()
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
@@ -94,7 +103,7 @@ class ADBProcess(
         val (widthStr, heightStr) = screenSize.split("x")
         return ScreenDimensions(
             width = widthStr.toInt(),
-            height = heightStr.toInt()
+            height = heightStr.toInt(),
         )
     }
 
@@ -108,22 +117,30 @@ class ADBProcess(
      *
      * This process will perform a swipe on emulator screen
      */
-    fun sendSwipeEvent(startX: Int, startY: Int, endX: Int, endY: Int, duration: Int? = null, actionDelay: Duration?) {
+    fun sendSwipeEvent(
+        startX: Int,
+        startY: Int,
+        endX: Int,
+        endY: Int,
+        duration: Int? = null,
+        actionDelay: Duration?,
+    ) {
         val process: Process
         if (duration == null) {
             process = ProcessBuilder("adb", "shell", "input", "swipe", "$startX", "$startY", "$endX", "$endY").start()
         } else {
-            process = ProcessBuilder(
-                "adb",
-                "shell",
-                "input",
-                "swipe",
-                "$startX",
-                "$startY",
-                "$endX",
-                "$endY",
-                "$duration"
-            ).start()
+            process =
+                ProcessBuilder(
+                    "adb",
+                    "shell",
+                    "input",
+                    "swipe",
+                    "$startX",
+                    "$startY",
+                    "$endX",
+                    "$endY",
+                    "$duration",
+                ).start()
         }
         process.waitFor()
         actionDelay?.let { Delay.ofSeconds(actionDelay) }
@@ -146,11 +163,12 @@ class ADBProcess(
         val reader = BufferedReader(InputStreamReader(process.inputStream))
         var line: String?
 
-        val userInputThread = thread {
-            // Wait for user input to stop the process
-            readLine()
-            process.destroy()
-        }
+        val userInputThread =
+            thread {
+                // Wait for user input to stop the process
+                readLine()
+                process.destroy()
+            }
 
         while (reader.readLine().also { line = it } != null) {
             line?.let {
@@ -164,7 +182,7 @@ class ADBProcess(
                         endX = swipeInterceptEvent.endX,
                         endY = swipeInterceptEvent.endY,
                         duration = swipeInterceptEvent.duration,
-                        actionDelay = null
+                        actionDelay = null,
                     )
                 }
             }
@@ -191,7 +209,7 @@ class ADBProcess(
         return if (matcher.find()) {
             ScreenResolutions(
                 width = matcher.group(1).toInt(),
-                height = matcher.group(2).toInt()
+                height = matcher.group(2).toInt(),
             )
         } else {
             println("Failed to retrieve screen resolution.")

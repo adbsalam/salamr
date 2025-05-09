@@ -6,9 +6,7 @@ import org.xml.sax.InputSource
 import javax.xml.parsers.DocumentBuilderFactory
 
 class FakeXmlParser : XmlParser {
-    override fun createDocFromDumpFile(dir: String): Document {
-        return createDocumentFromString(mockWindowDump)
-    }
+    override fun createDocFromDumpFile(dir: String): Document = createDocumentFromString(mockWindowDump)
 
     private fun createDocumentFromString(xmlString: String): Document {
         val factory = DocumentBuilderFactory.newInstance()

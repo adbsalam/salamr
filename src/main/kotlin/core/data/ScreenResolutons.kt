@@ -6,5 +6,5 @@ package core.data
  */
 data class ScreenResolutions(
     val width: Int,
-    val height: Int
+    val height: Int,
 )

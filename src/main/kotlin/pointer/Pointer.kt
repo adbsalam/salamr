@@ -9,7 +9,6 @@ import java.util.*
 class Pointer(
     private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
 ) {
-
     /**
      * Executes an action based on the input string.
      * If the input is "on" (case-insensitive), it enables pointer location.
@@ -18,7 +17,6 @@ class Pointer(
      * @param input The input string to process.
      */
     fun run(input: String?) {
-
         if (input.isNullOrEmpty()) {
             actionExecutor.systemExit.exitWithHelp("invalid value for ${Options.Pointer.arg}")
         }
