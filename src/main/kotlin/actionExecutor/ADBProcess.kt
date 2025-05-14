@@ -4,8 +4,11 @@ import actionExecutor.ActionExecutor.Companion.swipeInterceptEvent
 import core.Delay
 import core.DirManager
 import core.Duration
+import core.Logger
+import core.data.RecordedEvents
 import core.data.ScreenDimensions
 import core.data.ScreenResolutions
+import core.data.UserInput
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.regex.Pattern
@@ -155,6 +158,9 @@ class ADBProcess(
         while (reader.readLine().also { line = it } != null) {
             line?.let {
                 eventList.add(it)
+                if (it.contains(UserInput.KeyboardKey.KEY_S.rawValue) && Regex("""\bDOWN\b""").containsMatchIn(it)) {
+                    Logger.log("snapshot key detected: \uD83D\uDCF7")
+                }
                 if (it.contains("ffffffff")) {
                     // tap release/finger up
                     // This is to stop any fling behavior caused by the action

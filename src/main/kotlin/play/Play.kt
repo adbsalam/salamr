@@ -2,12 +2,14 @@ package play
 
 import actionExecutor.ActionExecutor
 import actionExecutor.ActionExecutorImpl
+import actionExecutor.KeyEvent
 import actionExecutor.SwipeAction.Custom
 import core.DirManager
 import core.Duration
 import core.Logger.log
 import core.SnapshotArgs
 import core.data.RecordedEvents
+import core.data.UserInput
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -59,28 +61,47 @@ class Play(
         failedSnapshots = mutableListOf()
         val eventsList = RecordedEvents.recordedEventAdapter.fromJson(eventsJson) ?: emptyList()
         eventsList.forEachIndexed { index, event ->
-            log("playing recorded input ${index + 1}")
-            if (event.tap != null) {
-                actionExecutor.tap(
-                    x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.0)
-                )
-                addSnapshotDelayIfRequired(snapshotArg)
-                performSnapshotActions(event.tap.uuid, snapshotArg)
-            } else if (event.swipe != null) {
-                actionExecutor.swipe(
-                    Custom(
-                        startX = event.swipe.startX,
-                        startY = event.swipe.startY,
-                        endX = event.swipe.endX,
-                        endY = event.swipe.endY,
-                        duration = event.swipe.duration
+            when {
+                event.tap != null -> {
+                    log("playing recorded input - type: TAP")
+                    actionExecutor.tap(
+                        x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.0)
                     )
-                )
-                actionExecutor.swipe(
-                    input = ActionExecutor.swipeInterceptEvent, actionDelay = Duration(0.5)
-                )
-                addSnapshotDelayIfRequired(snapshotArg)
-                performSnapshotActions(event.swipe.uuid, snapshotArg)
+                    addSnapshotDelayIfRequired(snapshotArg)
+                    performSnapshotActions(event.tap.uuid, snapshotArg)
+                }
+
+                event.swipe != null -> {
+                    log("playing recorded input - type: SWIPE")
+                    actionExecutor.swipe(
+                        Custom(
+                            startX = event.swipe.startX,
+                            startY = event.swipe.startY,
+                            endX = event.swipe.endX,
+                            endY = event.swipe.endY,
+                            duration = event.swipe.duration
+                        )
+                    )
+                    actionExecutor.swipe(
+                        input = ActionExecutor.swipeInterceptEvent, actionDelay = Duration(0.5)
+                    )
+                    addSnapshotDelayIfRequired(snapshotArg)
+                    performSnapshotActions(event.swipe.uuid, snapshotArg)
+                }
+
+                event.keyboardEvent != null -> {
+                    val keyboardKey = UserInput.KeyboardKey.entries.first { it.name == event.keyboardEvent.key }
+                    if (keyboardKey == UserInput.KeyboardKey.KEY_S) {
+                        log("playing recorded input - type: SNAPSHOT")
+                        addSnapshotDelayIfRequired(snapshotArg)
+                        performSnapshotActions(event.keyboardEvent.uuid, snapshotArg)
+                    } else {
+                        val keyCode = KeyEvent.getKeyCodeForEvent(keyboardKey)
+                        log("playing recorded input - type: ${keyboardKey.name}")
+                        actionExecutor.sendKeyEvent(keyEvent = keyCode, actionDelay = Duration(seconds = 0.5))
+
+                    }
+                }
             }
         }
 
@@ -88,6 +109,7 @@ class Play(
             SnapshotArgs.Record -> log("snapshots recorded \uD83D\uDCF7")
             SnapshotArgs.Verify ->
                 snapshotReportGenerator.generateHtmlFromReportFiles(failedSnapshots)
+
             else -> {}
         }
     }

@@ -39,6 +39,8 @@ salamr -m 'YOUR_VIEW_TEXT_HERE|YOUR_VIEW_TEXT_HERE'
 
 # record your inputs
 salamr -r
+# To perform swipe its recommended to use keyboard arrow keys such as LEFT,RIGHT,UP,DOWN, as this avoids any fling that might be caused by user swipe
+# While recording events, if you require to take a snapshot at any point, make use of keyboard key "s" during recording
 
 # record your inputs to a separate file
 salamr -r -f 'FILE_NAME_HERE'
