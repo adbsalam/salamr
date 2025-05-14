@@ -7,7 +7,9 @@ import core.data.EventLogType
 import core.data.RecordedEvents
 import core.data.ScreenResolutions
 import core.data.UserInput
+import java.awt.event.KeyEvent
 import java.util.*
+import kotlin.math.log
 
 class EventLogManager(
     private val uuidGenerator: UUIDGenerator = DefaultUUIDGenerator(),
@@ -60,18 +62,23 @@ class EventLogManager(
         var isInChunk = false
 
         for (line in lines) {
-            if (line.contains("ABS_MT_TRACKING_ID   00000000")) {
-                isInChunk = true
-            }
+            // if this is a keyboard event, no further filtering is needed
+            if (line.contains("EV_KEY") && Regex("""\bDOWN\b""").containsMatchIn(line)) {
+                chunks.add(listOf(line))
+            } else {
+                if (line.contains("ABS_MT_TRACKING_ID   00000000")) {
+                    isInChunk = true
+                }
 
-            if (isInChunk) {
-                chunkLines.add(line)
-            }
+                if (isInChunk) {
+                    chunkLines.add(line)
+                }
 
-            if (line.contains("ABS_MT_TRACKING_ID   ffffffff")) {
-                isInChunk = false
-                chunks.add(chunkLines.toList())
-                chunkLines.clear()
+                if (line.contains("ABS_MT_TRACKING_ID   ffffffff")) {
+                    isInChunk = false
+                    chunks.add(chunkLines.toList())
+                    chunkLines.clear()
+                }
             }
         }
 
@@ -88,17 +95,22 @@ class EventLogManager(
         val isMultipleX = list.filter { it.contains(EventLogType.ABS_MT_POSITION_X.name) }.size > 1
         val isMultipleY = list.filter { it.contains(EventLogType.ABS_MT_POSITION_Y.name) }.size > 1
 
-        if (!isMultipleX && !isMultipleY) {
-            val logX = list.firstOrNull { it.contains(EventLogType.ABS_MT_POSITION_X.name) }
-            val logY = list.firstOrNull { it.contains(EventLogType.ABS_MT_POSITION_Y.name) }
-            if (logX != null && logY != null) {
-                return getTapEvent(logX, logY)
-            }
-        } else {
-            return getSwipeEvent(list)
-        }
 
-        return null
+        val result: UserInput? = when {
+            list.size == 1 && UserInput.KeyboardKey.containsKeyboardKey(list.first()) -> getKeyboardEvent(log = list.first())
+            !isMultipleX && !isMultipleY -> {
+                val logX = list.firstOrNull { it.contains(EventLogType.ABS_MT_POSITION_X.name) }
+                val logY = list.firstOrNull { it.contains(EventLogType.ABS_MT_POSITION_Y.name) }
+                if (logX != null && logY != null) {
+                    getTapEvent(logX, logY)
+                } else {
+                    null
+                }
+            }
+
+            else -> getSwipeEvent(list)
+        }
+        return result
     }
 
     /**
@@ -160,6 +172,11 @@ class EventLogManager(
             return UserInput.Swipe(scaledX, scaledY, scaledEndX, scaledEndY, durationMillis?.coerceAtLeast(50))
         }
         return null
+    }
+
+    private fun getKeyboardEvent(log: String): UserInput? {
+        val keyboardEventKey = UserInput.KeyboardKey.getKeyForInput(log)
+        return keyboardEventKey?.let { UserInput.KeyBoardEvent(it) }
     }
 
     /**
@@ -225,6 +242,13 @@ class EventLogManager(
                         endX = it.endX,
                         endY = it.endY,
                         duration = it.duration
+                    )
+                )
+
+                is UserInput.KeyBoardEvent -> RecordedEvents(
+                    keyboardEvent = RecordedEvents.KeyboardEvent(
+                        uuid = uuidGenerator.generate(),
+                        key = it.key.name
                     )
                 )
             }
