@@ -65,7 +65,7 @@ class Play(
                 event.tap != null -> {
                     log("playing recorded input - type: TAP")
                     actionExecutor.tap(
-                        x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.5)
+                        x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.0)
                     )
                     addSnapshotDelayIfRequired(snapshotArg)
                     performSnapshotActions(event.tap.uuid, snapshotArg)
