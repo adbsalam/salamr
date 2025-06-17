@@ -158,7 +158,6 @@ class ADBProcess(
         while (reader.readLine().also { line = it } != null) {
             line?.let {
                 eventList.add(it)
-                println("-----------------" + it)
                 if (it.contains(UserInput.KeyboardKey.KEY_S.rawValue) && Regex("""\bDOWN\b""").containsMatchIn(it)) {
                     Logger.log("snapshot key detected: \uD83D\uDCF7")
                 }
