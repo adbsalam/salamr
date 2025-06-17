@@ -25,6 +25,7 @@ class SnapshotReportGenerator(
      */
     fun generateHtmlFromReportFiles(
         reportFiles: List<ReportFile>,
+        fileName: String? = null
     ) {
         deleteAllGeneratedSnapshotsIfExist()
         val html = if (reportFiles.isEmpty()) {
@@ -33,10 +34,11 @@ class SnapshotReportGenerator(
             generateFailedSnapshotsReport(reportFiles)
         }
 
-        val reportFile = File(dirManager.reportDir, "report.html")
+        val reportFileName = fileName?.let { "$fileName-report.html" } ?: "report.html"
+        val reportFile = File(dirManager.reportDir, reportFileName)
         reportFile.writeText(html)
         println(" \uD83D\uDCCA HTML report saved at: ${reportFile.absolutePath}")
-        openReportInChrome()
+        openReportInChrome(reportFileName)
     }
 
     /**
@@ -159,9 +161,9 @@ class SnapshotReportGenerator(
         }
     }
 
-    private fun openReportInChrome() {
+    private fun openReportInChrome(fileName: String?) {
         try {
-            val reportFile = File(System.getProperty("user.home"), ".salamr/report/report.html")
+            val reportFile = File(System.getProperty("user.home"), ".salamr/report/$fileName")
             ProcessBuilder("open", "-a", "Google Chrome", reportFile.absolutePath).start()
         } catch (e: Exception) {
             println("Failed to open report in Chrome: ${e.message}")

@@ -4,32 +4,46 @@ import actionExecutor.*
 import core.*
 import core.Delay.ofSeconds
 import core.Interactions.*
+import core.Logger.log
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import locator.Locator
+import play.ImageComparisonManager
+import play.ReportFile
+import play.SnapshotManager
+import play.SnapshotReportGenerator
 
 /**
  * multi locator helps performs actions on multiple elements as a sequence
  */
 class MultiLocator(
     private val locator: Locator = Locator(),
-    private val actionExecutor: ActionExecutor = ActionExecutorImpl()
+    private val actionExecutor: ActionExecutor = ActionExecutorImpl(),
+    private val snapshotReportGenerator: SnapshotReportGenerator = SnapshotReportGenerator(),
+    private val snapshotManager: SnapshotManager = SnapshotManager(),
+    private val imageComparisonManager: ImageComparisonManager = ImageComparisonManager(),
 ) {
+    private var failedSnapshots = mutableListOf<ReportFile>()
+
     /**
      * Parses the given list of strings joined with "," into individual strings and performs actions on each item.
      * @param args the string list joined with ",".
      */
-    fun run(args: String?) {
+    fun run(args: String?, snapshotArgs: SnapshotArgs?) {
         if (args.isNullOrEmpty()) {
             actionExecutor.systemExit.exitWithHelp("no args passed for -l, -l requires at least 1 arg, see below for usage")
         }
 
-        args.split("|").forEach { input ->
+        val hash = args.hashCode().toString()
+
+        args.split("|").forEachIndexed { index, input ->
             Logger.log("processing input.. $input")
             val element = convertToElement(input)
             if (element != Other) {
                 ofSeconds(Duration(1.0)) // delay will be handled by locator
             }
             when (element) {
-                SystemBack -> actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back.input)
+                SystemBack -> actionExecutor.sendKeyEvent(keyEvent = KeyEvent.Back.input, Duration(2.0))
                 DelayIn -> performDelay(input)
                 SwipeDown -> performSwipe(input, Direction.UpToDown)
                 SwipeUp -> performSwipe(input, Direction.DownToUp)
@@ -37,8 +51,20 @@ class MultiLocator(
                 SwipeLeft -> performSwipe(input, Direction.LeftToRight)
                 Coordinates -> performCustomTap(input)
                 KeyCode -> performKeyCodeEvent(input)
-                Other -> locator.run(input)
+                Other -> {
+                    locator.run(input)
+                    addSnapshotDelayIfRequired(snapshotArgs)
+                    performSnapshotActions(input, snapshotArgs, hash, index)
+                }
             }
+        }
+
+        when (snapshotArgs) {
+            SnapshotArgs.Record -> log("snapshots recorded \uD83D\uDCF7")
+            SnapshotArgs.Verify ->
+                snapshotReportGenerator.generateHtmlFromReportFiles(failedSnapshots)
+
+            else -> {}
         }
     }
 
@@ -179,6 +205,48 @@ class MultiLocator(
         val isOptionText = this.filter { it.isLetter() }
         if (isOptionText.length > 2) return false
         return this.startsWith(interactions.inputName)
+    }
+
+    /**
+     * Performs snapshot actions based on the provided snapshot arguments.
+     *
+     * @param eventUUID the UUID of the event for which the snapshot action is performed.
+     * @param snapshotArgs the snapshot argument indicating the type of action.
+     */
+    private fun performSnapshotActions(
+        inputName: String,
+        snapshotArgs: SnapshotArgs?,
+        hash: String,
+        index: Int
+    ) {
+        val uuid = "$inputName$hash-$index"
+        when (snapshotArgs) {
+            SnapshotArgs.Record -> snapshotManager.takeScreenshot(uuid)
+            SnapshotArgs.Verify -> try {
+                imageComparisonManager.compareImage(uuid)?.let {
+                    failedSnapshots.add(it)
+                }
+            } catch (e: Exception) {
+                println("Something went wrong while image comparison")
+            }
+
+            else -> {}
+        }
+    }
+
+    /**
+     * Adds a delay before taking a snapshot if required.
+     * @param snapshotArg the snapshot argument indicating the type of action.
+     *
+     * Delay is required to let pending animations end.
+     */
+    private fun addSnapshotDelayIfRequired(snapshotArg: SnapshotArgs?) {
+        when (snapshotArg) {
+            SnapshotArgs.Record,
+            SnapshotArgs.Verify -> runBlocking { delay(500) }
+
+            else -> {}
+        }
     }
 
 }

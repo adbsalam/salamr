@@ -50,7 +50,7 @@ class Play(
      * Plays back the recorded inputs stored in the provided JSON string.
      * @param eventsJson the JSON string containing recorded events.
      */
-    private fun playbackInputs(eventsJson: String, snapshotArg: SnapshotArgs?) {
+    private fun playbackInputs(eventsJson: String, snapshotArg: SnapshotArgs?, fileName: String? = null) {
         if (dirManager.reportDir.exists()) {
             dirManager.reportDir.deleteRecursively()
             dirManager.reportDir.mkdir()
@@ -60,12 +60,12 @@ class Play(
         }
         failedSnapshots = mutableListOf()
         val eventsList = RecordedEvents.recordedEventAdapter.fromJson(eventsJson) ?: emptyList()
-        eventsList.forEachIndexed { index, event ->
+        eventsList.forEachIndexed { _, event ->
             when {
                 event.tap != null -> {
                     log("playing recorded input - type: TAP")
                     actionExecutor.tap(
-                        x = event.tap.x, y = event.tap.y, actionDelay = Duration(1.0)
+                        x = event.tap.x, y = event.tap.y, actionDelay = Duration(0.5)
                     )
                     addSnapshotDelayIfRequired(snapshotArg)
                     performSnapshotActions(event.tap.uuid, snapshotArg)
@@ -108,7 +108,7 @@ class Play(
         when (snapshotArg) {
             SnapshotArgs.Record -> log("snapshots recorded \uD83D\uDCF7")
             SnapshotArgs.Verify ->
-                snapshotReportGenerator.generateHtmlFromReportFiles(failedSnapshots)
+                snapshotReportGenerator.generateHtmlFromReportFiles(failedSnapshots, fileName)
 
             else -> {}
         }

@@ -6,7 +6,7 @@ import core.data.ScreenResolutions
 interface ActionExecutor {
 
     companion object {
-        val swipeInterceptEvent = SwipeAction.Custom(400, 400, 450, 400, 400)
+        val swipeInterceptEvent = SwipeAction.Custom(100, 100, 100, 100, 200)
     }
 
     fun getScreenResolutions(): ScreenResolutions

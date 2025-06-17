@@ -37,7 +37,7 @@ private fun handleOption(
     // option provided by user
     when (Options.entries.first { it.arg == args[0] }) {
         Options.Help -> showHelp(showElementSummary = true)
-        Options.Multi -> multiLocator.run(args.getOrNull(1))
+        Options.Multi -> multiLocator.run(args.getOrNull(1), args.extractScreenshotArg())
         Options.Record -> record.run(args)
         Options.Play -> play.run(args.extractScreenshotArg(), args.getOrNull(2))
         Options.Delete -> delete.run(args.getOrNull(1))

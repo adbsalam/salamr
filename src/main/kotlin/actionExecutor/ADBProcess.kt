@@ -158,20 +158,9 @@ class ADBProcess(
         while (reader.readLine().also { line = it } != null) {
             line?.let {
                 eventList.add(it)
+                println("-----------------" + it)
                 if (it.contains(UserInput.KeyboardKey.KEY_S.rawValue) && Regex("""\bDOWN\b""").containsMatchIn(it)) {
                     Logger.log("snapshot key detected: \uD83D\uDCF7")
-                }
-                if (it.contains("ffffffff")) {
-                    // tap release/finger up
-                    // This is to stop any fling behavior caused by the action
-                    sendSwipeEvent(
-                        startX = swipeInterceptEvent.startX,
-                        startY = swipeInterceptEvent.startY,
-                        endX = swipeInterceptEvent.endX,
-                        endY = swipeInterceptEvent.endY,
-                        duration = swipeInterceptEvent.duration,
-                        actionDelay = null
-                    )
                 }
             }
         }
